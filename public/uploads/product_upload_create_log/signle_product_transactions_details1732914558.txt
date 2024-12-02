@@ -1,0 +1,1 @@
+trans id = 7, pro id = 4, var = 5, stock = 69, price = 550, v-price = 0.0000, sprice = 550, t-price = 550
