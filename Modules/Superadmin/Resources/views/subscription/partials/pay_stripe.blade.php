@@ -3,11 +3,9 @@ $code = strtolower($system_currency->code);
 @endphp
 
 <div class="col-md-12">
-	<form action="{{action([\Modules\Superadmin\Http\Controllers\SubscriptionController::class, 'confirm'], [$package->id])}}" method="POST">
+	<form action="{{action('\Modules\Superadmin\Http\Controllers\SubscriptionController@confirm', [$package->id])}}" method="POST">
 	 	{{ csrf_field() }}
 	 	<input type="hidden" name="gateway" value="{{$k}}">
-	 	<input type="hidden" name="price" value="{{$package->price}}">
-		<input type="hidden" name="coupon_code" value="{{request()->get('code') ?? null}}">
 		<script
 		        src="https://checkout.stripe.com/checkout.js" class="stripe-button"
 		        data-key="{{env('STRIPE_PUB_KEY')}}"

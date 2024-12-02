@@ -7,19 +7,20 @@ use App\Contact;
 use App\CustomerGroup;
 use App\Restaurant\Booking;
 use App\User;
-use App\Utils\RestaurantUtil;
 use App\Utils\Util;
+use DB;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Yajra\DataTables\Facades\DataTables;
+use App\Utils\RestaurantUtil;
 
 class BookingController extends Controller
 {
     /**
      * All Utils instance.
+     *
      */
     protected $commonUtil;
-
     protected $restUtil;
 
     public function __construct(Util $commonUtil, RestaurantUtil $restUtil)
@@ -35,13 +36,13 @@ class BookingController extends Controller
      */
     public function index()
     {
-        if (! auth()->user()->can('crud_all_bookings') && ! auth()->user()->can('crud_own_bookings')) {
+        if (!auth()->user()->can('crud_all_bookings') && !auth()->user()->can('crud_own_bookings')) {
             abort(403, 'Unauthorized action.');
         }
         $business_id = request()->session()->get('user.business_id');
 
         $user_id = request()->has('user_id') ? request()->user_id : null;
-        if (! auth()->user()->hasPermissionTo('crud_all_bookings') && ! $this->restUtil->is_admin(auth()->user(), $business_id)) {
+        if (!auth()->user()->hasPermissionTo('crud_all_bookings') && !$this->restUtil->is_admin(auth()->user(), $business_id)) {
             $user_id = request()->session()->get('user.id');
         }
         if (request()->ajax()) {
@@ -49,8 +50,8 @@ class BookingController extends Controller
                 'start_date' => request()->start,
                 'end_date' => request()->end,
                 'user_id' => $user_id,
-                'location_id' => ! empty(request()->location_id) ? request()->location_id : null,
-                'business_id' => $business_id,
+                'location_id' => !empty(request()->location_id) ? request()->location_id : null,
+                'business_id' => $business_id
             ];
 
             $events = $this->restUtil->getBookingsForCalendar($filters);
@@ -60,7 +61,7 @@ class BookingController extends Controller
 
         $business_locations = BusinessLocation::forDropdown($business_id);
 
-        $customers = Contact::customersDropdown($business_id, false);
+        $customers =  Contact::customersDropdown($business_id, false);
 
         $correspondents = User::forDropdown($business_id, false);
 
@@ -88,7 +89,7 @@ class BookingController extends Controller
      */
     public function store(Request $request)
     {
-        if (! auth()->user()->can('crud_all_bookings') && ! auth()->user()->can('crud_own_bookings')) {
+        if (!auth()->user()->can('crud_all_bookings') && !auth()->user()->can('crud_own_bookings')) {
             abort(403, 'Unauthorized action.');
         }
         try {
@@ -113,7 +114,7 @@ class BookingController extends Controller
                 if (isset($input['res_table_id'])) {
                     $query->where('table_id', $input['res_table_id']);
                 }
-
+                
                 $existing_booking = $query->first();
                 if (empty($existing_booking)) {
                     $input['business_id'] = $business_id;
@@ -121,38 +122,37 @@ class BookingController extends Controller
                     $input['booking_start'] = $booking_start;
                     $input['booking_end'] = $booking_end;
                     $booking = Booking::createBooking($input);
-
+                    
                     $output = ['success' => 1,
-                        'msg' => trans('lang_v1.added_success'),
+                        'msg' => trans("lang_v1.added_success"),
                     ];
 
                     //Send notification to customer
                     if (isset($input['send_notification']) && $input['send_notification'] == 1) {
                         $output['send_notification'] = 1;
-                        $output['notification_url'] = action([\App\Http\Controllers\NotificationController::class, 'getTemplate'], ['transaction_id' => $booking->id, 'template_for' => 'new_booking']);
+                        $output['notification_url'] = action('NotificationController@getTemplate', ["transaction_id" => $booking->id,"template_for" => "new_booking"]);
                     }
                 } else {
-                    $time_range = $this->commonUtil->format_date($existing_booking->booking_start, true).' ~ '.
+                    $time_range = $this->commonUtil->format_date($existing_booking->booking_start, true) . ' ~ ' .
                                     $this->commonUtil->format_date($existing_booking->booking_end, true);
 
                     $output = ['success' => 0,
-                        'msg' => trans(
-                            'restaurant.booking_not_available',
-                            ['customer_name' => $existing_booking->customer->name,
-                                'booking_time_range' => $time_range, ]
-                        ),
-                    ];
+                            'msg' => trans(
+                                "restaurant.booking_not_available",
+                                ['customer_name' => $existing_booking->customer->name,
+                                'booking_time_range' => $time_range]
+                            )
+                        ];
                 }
             } else {
-                exit(__('messages.something_went_wrong'));
+                die(__("messages.something_went_wrong"));
             }
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             $output = ['success' => 0,
-                'msg' => __('messages.something_went_wrong'),
-            ];
+                            'msg' => __("messages.something_went_wrong")
+                        ];
         }
-
         return $output;
     }
 
@@ -170,7 +170,7 @@ class BookingController extends Controller
                                 ->where('id', $id)
                                 ->with(['table', 'customer', 'correspondent', 'waiter', 'location'])
                                 ->first();
-            if (! empty($booking)) {
+            if (!empty($booking)) {
                 $booking_start = $this->commonUtil->format_date($booking->booking_start, true);
                 $booking_end = $this->commonUtil->format_date($booking->booking_end, true);
 
@@ -180,7 +180,6 @@ class BookingController extends Controller
                     'completed' => __('restaurant.completed'),
                     'cancelled' => __('restaurant.cancelled'),
                 ];
-
                 return view('restaurant.booking.show', compact('booking', 'booking_start', 'booking_end', 'booking_statuses'));
             }
         }
@@ -206,28 +205,27 @@ class BookingController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if (! auth()->user()->can('crud_all_bookings') && ! auth()->user()->can('crud_own_bookings')) {
+        if (!auth()->user()->can('crud_all_bookings') && !auth()->user()->can('crud_own_bookings')) {
             abort(403, 'Unauthorized action.');
         }
         try {
             $business_id = $request->session()->get('user.business_id');
             $booking = Booking::where('business_id', $business_id)
                                 ->find($id);
-            if (! empty($booking)) {
+            if (!empty($booking)) {
                 $booking->booking_status = $request->booking_status;
                 $booking->save();
             }
 
             $output = ['success' => 1,
-                'msg' => trans('lang_v1.updated_success'),
-            ];
+                            'msg' => trans("lang_v1.updated_success")
+                        ];
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             $output = ['success' => 0,
-                'msg' => __('messages.something_went_wrong'),
-            ];
+                            'msg' => __("messages.something_went_wrong")
+                        ];
         }
-
         return $output;
     }
 
@@ -239,7 +237,7 @@ class BookingController extends Controller
      */
     public function destroy($id)
     {
-        if (! auth()->user()->can('crud_all_bookings') && ! auth()->user()->can('crud_own_bookings')) {
+        if (!auth()->user()->can('crud_all_bookings') && !auth()->user()->can('crud_own_bookings')) {
             abort(403, 'Unauthorized action.');
         }
         try {
@@ -248,15 +246,14 @@ class BookingController extends Controller
                                 ->where('id', $id)
                                 ->delete();
             $output = ['success' => 1,
-                'msg' => trans('lang_v1.deleted_success'),
-            ];
+                            'msg' => trans("lang_v1.deleted_success")
+                        ];
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             $output = ['success' => 0,
-                'msg' => __('messages.something_went_wrong'),
-            ];
+                            'msg' => __("messages.something_went_wrong")
+                        ];
         }
-
         return $output;
     }
 
@@ -268,7 +265,7 @@ class BookingController extends Controller
      */
     public function getTodaysBookings()
     {
-        if (! auth()->user()->can('crud_all_bookings') && ! auth()->user()->can('crud_own_bookings')) {
+        if (!auth()->user()->can('crud_all_bookings') && !auth()->user()->can('crud_own_bookings')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -280,13 +277,15 @@ class BookingController extends Controller
                         ->where('booking_status', 'booked')
                         ->whereDate('booking_start', $today)
                         ->with(['table', 'customer', 'correspondent', 'waiter', 'location']);
-
-            if (! empty(request()->location_id)) {
+                        
+            if (!empty(request()->location_id)) {
                 $query->where('location_id', request()->location_id);
             }
 
-            if (! auth()->user()->hasPermissionTo('crud_all_bookings') && ! $this->commonUtil->is_admin(auth()->user(), $business_id)) {
-                $query->where(function ($query) use ($user_id) {
+            if (!auth()->user()->hasPermissionTo('crud_all_bookings') && !$this->commonUtil->is_admin(auth()->user(), $business_id)) {
+
+
+                $query->where(function ($query) use ($user_id){
                     $query->where('created_by', $user_id)
                         ->orWhere('correspondent_id', $user_id)
                         ->orWhere('waiter_id', $user_id);
@@ -297,19 +296,19 @@ class BookingController extends Controller
 
             return Datatables::of($query)
                 ->editColumn('table', function ($row) {
-                    return ! empty($row->table->name) ? $row->table->name : '--';
+                    return !empty($row->table->name) ? $row->table->name : '--';
                 })
                 ->editColumn('customer', function ($row) {
-                    return ! empty($row->customer->name) ? $row->customer->name : '--';
+                    return !empty($row->customer->name) ? $row->customer->name : '--';
                 })
                 ->editColumn('correspondent', function ($row) {
-                    return ! empty($row->correspondent->user_full_name) ? $row->correspondent->user_full_name : '--';
+                    return !empty($row->correspondent->user_full_name) ? $row->correspondent->user_full_name : '--';
                 })
                 ->editColumn('waiter', function ($row) {
-                    return ! empty($row->waiter->user_full_name) ? $row->waiter->user_full_name : '--';
+                    return !empty($row->waiter->user_full_name) ? $row->waiter->user_full_name : '--';
                 })
                 ->editColumn('location', function ($row) {
-                    return ! empty($row->location->name) ? $row->location->name : '--';
+                    return !empty($row->location->name) ? $row->location->name : '--';
                 })
                 ->editColumn('booking_start', function ($row) {
                     return $this->commonUtil->format_date($row->booking_start, true);

@@ -1,6 +1,6 @@
 <div class="modal-dialog" role="document">
   <div class="modal-content">
-    {!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\DocumentShareController::class, 'update'], [$id]), 'id' => 'share_document_form', 'method' => 'put']) !!}
+    {!! Form::open(['url' => action('\Modules\Essentials\Http\Controllers\DocumentShareController@update', [$id]), 'id' => 'share_document_form', 'method' => 'put']) !!}
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
@@ -27,7 +27,7 @@
 
     </div>
     <div class="modal-footer">
-      <button type="submit" class="tw-dw-btn tw-dw-btn-primary tw-text-white pull-right ladda-button doc-share-btn" data-style="expand-right">
+      <button type="submit" class="btn btn-primary pull-right ladda-button doc-share-btn" data-style="expand-right">
           <span class="ladda-label">@lang('messages.update')</span>
       </button>
     </div>

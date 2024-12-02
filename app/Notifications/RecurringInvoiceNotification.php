@@ -4,6 +4,8 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\MailMessage;
 
 class RecurringInvoiceNotification extends Notification
 {
@@ -54,8 +56,8 @@ class RecurringInvoiceNotification extends Notification
             'transaction_id' => $this->invoice->id,
             'invoice_no' => $this->invoice->invoice_no,
             'invoice_status' => $this->invoice->status,
-            'out_of_stock_product' => ! empty($this->invoice->out_of_stock_product) ? $this->invoice->out_of_stock_product : null,
-            'subscription_no' => $this->invoice->subscription_no,
+            'out_of_stock_product' => !empty($this->invoice->out_of_stock_product) ? $this->invoice->out_of_stock_product : null,
+            'subscription_no' => $this->invoice->subscription_no
         ];
     }
 }

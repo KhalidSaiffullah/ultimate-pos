@@ -14,6 +14,7 @@ class Category extends Model
      *
      * @var array
      */
+    
 
     /**
      * The attributes that aren't mass assignable.
@@ -25,7 +26,7 @@ class Category extends Model
     /**
      * Combines Category and sub-category
      *
-     * @param  int  $business_id
+     * @param int $business_id
      * @return array
      */
     public static function catAndSubCategories($business_id)
@@ -35,7 +36,7 @@ class Category extends Model
                                 ->orderBy('name', 'asc')
                                 ->get()
                                 ->toArray();
-
+                        
         if (empty($all_categories)) {
             return [];
         }
@@ -51,7 +52,7 @@ class Category extends Model
         }
 
         $sub_cat_by_parent = [];
-        if (! empty($sub_categories)) {
+        if (!empty($sub_categories)) {
             foreach ($sub_categories as $sub_category) {
                 if (empty($sub_cat_by_parent[$sub_category['parent_id']])) {
                     $sub_cat_by_parent[$sub_category['parent_id']] = [];
@@ -62,7 +63,7 @@ class Category extends Model
         }
 
         foreach ($categories as $key => $value) {
-            if (! empty($sub_cat_by_parent[$value['id']])) {
+            if (!empty($sub_cat_by_parent[$value['id']])) {
                 $categories[$key]['sub_categories'] = $sub_cat_by_parent[$value['id']];
             }
         }
@@ -73,8 +74,8 @@ class Category extends Model
     /**
      * Category Dropdown
      *
-     * @param  int  $business_id
-     * @param  string  $type category type
+     * @param int $business_id
+     * @param string $type category type
      * @return array
      */
     public static function forDropdown($business_id, $type)
@@ -86,24 +87,47 @@ class Category extends Model
                             ->orderBy('name', 'asc')
                             ->get();
 
-        $dropdown = $categories->pluck('name', 'id');
+        $dropdown =  $categories->pluck('name', 'id');
 
         return $dropdown;
     }
 
     public function sub_categories()
     {
-        return $this->hasMany(\App\Category::class, 'parent_id');
+        return $this->hasMany(\App\Category::class, 'parent_id')->with('sub_categories');
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(\App\Category::class, 'parent_id')->with('parent');
     }
 
     /**
      * Scope a query to only include main categories.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeOnlyParent($query)
     {
         return $query->where('parent_id', 0);
+    }
+
+    /**
+     * Combines Category and all sub-category
+     *
+     * @param int $business_id
+     * @return array
+     */
+    public static function catAndAllSubCategories($business_id)
+    {
+        $categories = Category::where('business_id', $business_id)
+            ->where('category_type', 'product')
+            ->where('parent_id',0)
+            ->with('sub_categories');
+            // ->get();
+            // ->toArray();
+        
+        return $categories;
     }
 }

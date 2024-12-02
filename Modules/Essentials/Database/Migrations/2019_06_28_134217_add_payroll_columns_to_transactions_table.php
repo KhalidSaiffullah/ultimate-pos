@@ -32,7 +32,7 @@ class AddPayrollColumnsToTransactionsTable extends Migration
                 'expense_for' => $payroll->user_id,
                 'business_id' => $payroll->business_id,
                 'ref_no' => $payroll->ref_no,
-                'transaction_date' => $payroll->year.'-'.str_pad($payroll->month, 2, '0', STR_PAD_LEFT).'-01'.' 00:00:00',
+                'transaction_date' => $payroll->year . '-' . str_pad($payroll->month, 2, '0', STR_PAD_LEFT) . '-01' . ' 00:00:00',
                 'essentials_duration' => $payroll->duration,
                 'essentials_duration_unit' => $payroll->duration_unit,
                 'essentials_amount_per_unit_duration' => $payroll->amount_per_unit_duration,
@@ -45,15 +45,15 @@ class AddPayrollColumnsToTransactionsTable extends Migration
                 'final_total' => $payroll->gross_amount,
                 'created_by' => $payroll->created_by,
                 'created_at' => $payroll->created_at,
-                'updated_at' => $payroll->updated_at,
+                'updated_at' => $payroll->updated_at
             ];
         }
 
-        if (! empty($payroll_data)) {
+        if (!empty($payroll_data)) {
             Transaction::insert($payroll_data);
         }
 
-        DB::statement('DROP TABLE essentials_payrolls;');
+        DB::statement("DROP TABLE essentials_payrolls;");
     }
 
     /**

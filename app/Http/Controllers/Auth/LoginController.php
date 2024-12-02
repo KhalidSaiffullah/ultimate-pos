@@ -3,13 +3,10 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
 use App\Utils\BusinessUtil;
 use App\Utils\ModuleUtil;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
-use App\Rules\ReCaptcha;
-
 
 class LoginController extends Controller
 {
@@ -27,18 +24,17 @@ class LoginController extends Controller
     use AuthenticatesUsers;
 
     /**
+     * All Utils instance.
+     *
+     */
+    protected $businessUtil;
+    protected $moduleUtil;
+    /**
      * Where to redirect users after login.
      *
      * @var string
      */
-    protected $redirectTo = RouteServiceProvider::HOME;
-
-    /**
-     * All Utils instance.
-     */
-    protected $businessUtil;
-
-    protected $moduleUtil;
+    // protected $redirectTo = '/home';
 
     /**
      * Create a new controller instance.
@@ -50,11 +46,6 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
         $this->businessUtil = $businessUtil;
         $this->moduleUtil = $moduleUtil;
-    }
-
-    public function showLoginForm()
-    {
-        return view('auth.login');
     }
 
     /**
@@ -73,7 +64,6 @@ class LoginController extends Controller
 
         request()->session()->flush();
         \Auth::logout();
-
         return redirect('/login');
     }
 
@@ -89,9 +79,8 @@ class LoginController extends Controller
     {
         $this->businessUtil->activityLog($user, 'login', null, [], false, $user->business_id);
 
-        if (! $user->business->is_active) {
+        if (!$user->business->is_active) {
             \Auth::logout();
-
             return redirect('/login')
               ->with(
                   'status',
@@ -99,23 +88,20 @@ class LoginController extends Controller
               );
         } elseif ($user->status != 'active') {
             \Auth::logout();
-
             return redirect('/login')
               ->with(
                   'status',
                   ['success' => 0, 'msg' => __('lang_v1.user_inactive')]
               );
-        } elseif (! $user->allow_login) {
+        } elseif (!$user->allow_login) {
             \Auth::logout();
-
             return redirect('/login')
                 ->with(
                     'status',
                     ['success' => 0, 'msg' => __('lang_v1.login_not_allowed')]
                 );
-        } elseif (($user->user_type == 'user_customer') && ! $this->moduleUtil->hasThePermissionInSubscription($user->business_id, 'crm_module')) {
+        } elseif (($user->user_type == 'user_customer') && !$this->moduleUtil->hasThePermissionInSubscription($user->business_id, 'crm_module')) {
             \Auth::logout();
-
             return redirect('/login')
                 ->with(
                     'status',
@@ -127,7 +113,7 @@ class LoginController extends Controller
     protected function redirectTo()
     {
         $user = \Auth::user();
-        if (! $user->can('dashboard.data') && $user->can('sell.create')) {
+        if (!$user->can('dashboard.data') && $user->can('sell.create')) {
             return '/pos/create';
         }
 
@@ -137,22 +123,4 @@ class LoginController extends Controller
 
         return '/home';
     }
-
-    public function validateLogin(Request $request)
-    {
-        if(config('constants.enable_recaptcha')){
-            $this->validate($request, [
-                $this->username() => 'required|string',
-                'password' => 'required|string',
-                'g-recaptcha-response' => ['required', new ReCaptcha]
-            ]);
-        }else{
-            $this->validate($request, [
-                $this->username() => 'required|string',
-                'password' => 'required|string',
-            ]);
-        }
-       
-    }
-
 }

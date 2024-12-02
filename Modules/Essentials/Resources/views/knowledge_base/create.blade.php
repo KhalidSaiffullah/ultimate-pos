@@ -19,7 +19,7 @@
 
 <!-- Main content -->
 <section class="content">
-{!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\KnowledgeBaseController::class, 'store']), 'method' => 'post' ]) !!}
+{!! Form::open(['url' => action('\Modules\Essentials\Http\Controllers\KnowledgeBaseController@store'), 'method' => 'post' ]) !!}
     @if(!empty($parent))
         {!! Form::hidden('kb_type', $kb_type); !!}
         {!! Form::hidden('parent_id', $parent->id); !!}
@@ -53,7 +53,7 @@
                 </div>
             @endif
             <div class="col-md-12">
-                <button type="submit" class="tw-dw-btn tw-dw-btn-primary tw-text-white pull-right">@lang( 'messages.save' )</button>
+                <button type="submit" class="btn btn-primary pull-right">@lang( 'messages.save' )</button>
             </div>
         </div>
     @endcomponent

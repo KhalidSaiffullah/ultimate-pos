@@ -3,7 +3,7 @@
 	<div class="modal-dialog" role="document">
 	  <div class="modal-content">
 
-	    {!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'create']), 'method' => 'get', 'id' => 'add_payroll_step1' ]) !!}
+	    {!! Form::open(['url' => action('\Modules\Essentials\Http\Controllers\PayrollController@create'), 'method' => 'get', 'id' => 'add_payroll_step1' ]) !!}
 
 	    <div class="modal-body">
 	    	<div class="form-group">
@@ -12,10 +12,10 @@
 	      	</div>
 	      	<div class="form-group">
 	        	{!! Form::label('employee_ids', __( 'essentials::lang.employee' ) . ':*') !!}
-	        	<button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-primary select-all">
+	        	<button type="button" class="btn btn-primary btn-xs select-all">
                     @lang('lang_v1.select_all')
                 </button>
-                <button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-primary deselect-all">
+                <button type="button" class="btn btn-primary btn-xs deselect-all">
                     @lang('lang_v1.deselect_all')
                 </button>
 	          	{!! Form::select('employee_ids[]', $employees, null, ['class' => 'form-control select2', 'required', 'style' => 'width: 100%;', 'multiple', 'id' => 'employee_ids']); !!}
@@ -31,8 +31,8 @@
 	    </div>
 
 	    <div class="modal-footer">
-	      <button type="submit" class="tw-dw-btn tw-dw-btn-primary tw-text-white">@lang( 'essentials::lang.proceed' )</button>
-	      <button type="button" class="tw-dw-btn tw-dw-btn-neutral tw-text-white" data-dismiss="modal">@lang( 'messages.close' )</button>
+	      <button type="submit" class="btn btn-primary">@lang( 'essentials::lang.proceed' )</button>
+	      <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
 	    </div>
 
 	    {!! Form::close() !!}

@@ -10,7 +10,7 @@
 
 	    <ul class="treeview-menu">
 			<li class="{{ empty($request->segment(2)) ? 'active active-sub' : '' }}">
-				<a href="{{action([\Modules\Superadmin\Http\Controllers\SuperadminController::class, 'index'])}}">
+				<a href="{{action('\Modules\Superadmin\Http\Controllers\SuperadminController@index')}}">
 					<i class="fa fa-bank"></i>
 					<span class="title">
 						@lang('superadmin::lang.superadmin')
@@ -19,7 +19,7 @@
 			</li>
 
 			<li class="{{ $request->segment(2) == 'business' ? 'active active-sub' : '' }}">
-				<a href="{{action([\Modules\Superadmin\Http\Controllers\BusinessController::class, 'index'])}}">
+				<a href="{{action('\Modules\Superadmin\Http\Controllers\BusinessController@index')}}">
 					<i class="fa fa-bank"></i>
 					<span class="title">
 						@lang('superadmin::lang.all_business')
@@ -28,13 +28,13 @@
 			</li>
 			<!-- superadmin subscription -->
 			<li class="{{ $request->segment(2) == 'superadmin-subscription' ? 'active active-sub' : '' }}">
-			<a href = "{{action([\Modules\Superadmin\Http\Controllers\SuperadminSubscriptionsController::class, 'index'])}}"><i class="fa fa-refresh"></i>
+			<a href = "{{action('\Modules\Superadmin\Http\Controllers\SuperadminSubscriptionsController@index')}}"><i class="fa fa-refresh"></i>
 			<span class="title">@lang('superadmin::lang.subscription')</span>
 			</a>
 			</li>
 
 			<li class="{{ $request->segment(2) == 'packages' ? 'active active-sub' : '' }}">
-				<a href="{{action([\Modules\Superadmin\Http\Controllers\PackagesController::class, 'index'])}}">
+				<a href="{{action('\Modules\Superadmin\Http\Controllers\PackagesController@index')}}">
 					<i class="fa fa-credit-card"></i>
 					<span class="title">
 						@lang('superadmin::lang.subscription_packages')
@@ -43,7 +43,7 @@
 			</li>
 
 			{{-- <li class="{{ $request->segment(2) == 'frontend-pages' ? 'active active-sub' : '' }}">
-				<a href="{{action([\Modules\Superadmin\Http\Controllers\PageController::class, 'index'])}}">
+				<a href="{{action('\Modules\Superadmin\Http\Controllers\PageController@index')}}">
 					<i class="fa fa-clone"></i>
 					<span class="title">
 						@lang('superadmin::lang.frontend_pages')
@@ -52,7 +52,7 @@
 			</li> --}}
 
 			<li class="{{ $request->segment(2) == 'settings' ? 'active active-sub' : '' }}">
-				<a href="{{action([\Modules\Superadmin\Http\Controllers\SuperadminSettingsController::class, 'edit'])}}">
+				<a href="{{action('\Modules\Superadmin\Http\Controllers\SuperadminSettingsController@edit')}}">
 					<i class="fa fa-cogs"></i>
 					<span class="title">
 						@lang('superadmin::lang.super_admin_settings')
@@ -61,7 +61,7 @@
 			</li>
 
 			<li class="{{ $request->segment(2) == 'communicator' ? 'active active-sub' : '' }}">
-				<a href="{{action([\Modules\Superadmin\Http\Controllers\CommunicatorController::class, 'index'])}}">
+				<a href="{{action('\Modules\Superadmin\Http\Controllers\CommunicatorController@index')}}">
 					<i class="fa fa-envelope"></i>
 					<span class="title">
 						@lang('superadmin::lang.communicator')

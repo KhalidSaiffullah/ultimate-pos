@@ -15,8 +15,8 @@ class AddEssentialsVersionToSystemTable extends Migration
     public function up()
     {
         DB::table('system')->insert([
-            'key' => 'essentials_version',
-            'value' => config('essentials.module_version'),
+            'key'=>'essentials_version',
+            'value' => config('essentials.module_version')
         ]);
     }
 

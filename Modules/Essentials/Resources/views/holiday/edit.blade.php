@@ -1,7 +1,7 @@
 <div class="modal-dialog" role="document">
   <div class="modal-content">
 
-    {!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\EssentialsHolidayController::class, 'update'], [$holiday->id]), 'method' => 'put', 'id' => 'add_holiday_form' ]) !!}
+    {!! Form::open(['url' => action('\Modules\Essentials\Http\Controllers\EssentialsHolidayController@update', [$holiday->id]), 'method' => 'put', 'id' => 'add_holiday_form' ]) !!}
 
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -44,8 +44,8 @@
     </div>
 
     <div class="modal-footer">
-      <button type="submit" class="tw-dw-btn tw-dw-btn-primary tw-text-white">@lang( 'messages.update' )</button>
-      <button type="button" class="tw-dw-btn tw-dw-btn-neutral tw-text-white" data-dismiss="modal">@lang( 'messages.close' )</button>
+      <button type="submit" class="btn btn-primary">@lang( 'messages.update' )</button>
+      <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
     </div>
 
     {!! Form::close() !!}

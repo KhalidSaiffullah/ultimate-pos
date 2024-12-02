@@ -13,8 +13,8 @@ class AddModuleVersionToSystemTable extends Migration
     public function up()
     {
         DB::table('system')->insert([
-            'key' => 'woocommerce_version',
-            'value' => config('woocommerce.module_version'),
+            'key'=>'woocommerce_version',
+            'value' => config('woocommerce.module_version')
         ]);
     }
 

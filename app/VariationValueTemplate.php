@@ -12,7 +12,6 @@ class VariationValueTemplate extends Model
      * @var array
      */
     protected $guarded = ['id'];
-
     /**
      * Get the variation that owns the attribute.
      */

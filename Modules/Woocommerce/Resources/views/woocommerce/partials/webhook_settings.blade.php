@@ -12,7 +12,7 @@
         <div class="col-xs-8">
             <div class="form-group">
                 <strong>@lang('woocommerce::lang.webhook_delivery_url'):</strong>
-                <p>{{action([\Modules\Woocommerce\Http\Controllers\WoocommerceWebhookController::class, 'orderCreated'], ['business_id' => session()->get('business.id')])}}</p>
+                <p>{{action('\Modules\Woocommerce\Http\Controllers\WoocommerceWebhookController@orderCreated', ['business_id' => session()->get('business.id')])}}</p>
             </div>
         </div>
 
@@ -28,7 +28,7 @@
         <div class="col-xs-8">
             <div class="form-group">
                 <strong>@lang('woocommerce::lang.webhook_delivery_url'):</strong>
-                <p>{{action([\Modules\Woocommerce\Http\Controllers\WoocommerceWebhookController::class, 'orderUpdated'], ['business_id' => session()->get('business.id')])}}</p>
+                <p>{{action('\Modules\Woocommerce\Http\Controllers\WoocommerceWebhookController@orderUpdated', ['business_id' => session()->get('business.id')])}}</p>
             </div>
         </div>
 
@@ -44,7 +44,7 @@
         <div class="col-xs-8">
             <div class="form-group">
                 <strong>@lang('woocommerce::lang.webhook_delivery_url'):</strong>
-                <p>{{action([\Modules\Woocommerce\Http\Controllers\WoocommerceWebhookController::class, 'orderDeleted'], ['business_id' => session()->get('business.id')])}}</p>
+                <p>{{action('\Modules\Woocommerce\Http\Controllers\WoocommerceWebhookController@orderDeleted', ['business_id' => session()->get('business.id')])}}</p>
             </div>
         </div>
 
@@ -60,7 +60,7 @@
         <div class="col-xs-8">
             <div class="form-group">
                 <strong>@lang('woocommerce::lang.webhook_delivery_url'):</strong>
-                <p>{{action([\Modules\Woocommerce\Http\Controllers\WoocommerceWebhookController::class, 'orderRestored'], ['business_id' => session()->get('business.id')])}}</p>
+                <p>{{action('\Modules\Woocommerce\Http\Controllers\WoocommerceWebhookController@orderRestored', ['business_id' => session()->get('business.id')])}}</p>
             </div>
         </div>
 

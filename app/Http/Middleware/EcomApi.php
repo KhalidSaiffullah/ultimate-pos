@@ -21,10 +21,9 @@ class EcomApi
                                             // ->where('shop_domain', $shop_domain)
                                             ->exists();
 
-        if (! $is_api_settings_exists) {
-            exit('Invalid Request');
+        if (!$is_api_settings_exists) {
+            die('Invalid Request');
         }
-
         return $next($request);
     }
 }

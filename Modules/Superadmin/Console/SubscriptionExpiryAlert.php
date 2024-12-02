@@ -2,12 +2,13 @@
 
 namespace Modules\Superadmin\Console;
 
-use App\System;
 use Illuminate\Console\Command;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputArgument;
+
+use App\System;
 use Modules\Superadmin\Entities\Subscription;
 use Modules\Superadmin\Notifications\SendSubscriptionExpiryAlert;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
 
 class SubscriptionExpiryAlert extends Command
 {
@@ -16,7 +17,7 @@ class SubscriptionExpiryAlert extends Command
      *
      * @var string
      */
-    protected $signature = 'pos:sendSubscriptionExpiryAlert';
+    protected $name = 'pos:sendSubscriptionExpiryAlert';
 
     /**
      * The console command description.

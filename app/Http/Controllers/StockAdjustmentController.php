@@ -3,32 +3,34 @@
 namespace App\Http\Controllers;
 
 use App\BusinessLocation;
+
 use App\PurchaseLine;
+
 use App\Transaction;
 use App\Utils\ModuleUtil;
+
 use App\Utils\ProductUtil;
 use App\Utils\TransactionUtil;
 use Datatables;
+
 use DB;
 use Illuminate\Http\Request;
 use Spatie\Activitylog\Models\Activity;
-use App\Events\StockAdjustmentCreatedOrModified;
 
 class StockAdjustmentController extends Controller
 {
     /**
      * All Utils instance.
+     *
      */
     protected $productUtil;
-
     protected $transactionUtil;
-
     protected $moduleUtil;
 
     /**
      * Constructor
      *
-     * @param  ProductUtils  $product
+     * @param ProductUtils $product
      * @return void
      */
     public function __construct(ProductUtil $productUtil, TransactionUtil $transactionUtil, ModuleUtil $moduleUtil)
@@ -45,8 +47,7 @@ class StockAdjustmentController extends Controller
      */
     public function index()
     {
-
-        if (! auth()->user()->can('purchase.view') && ! auth()->user()->can('purchase.create') && ! auth()->user()->can('view_own_purchase')) {
+        if (!auth()->user()->can('purchase.view') && !auth()->user()->can('purchase.create')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -83,58 +84,36 @@ class StockAdjustmentController extends Controller
             $hide = '';
             $start_date = request()->get('start_date');
             $end_date = request()->get('end_date');
-            if (! empty($start_date) && ! empty($end_date)) {
+            if (!empty($start_date) && !empty($end_date)) {
                 $stock_adjustments->whereBetween(DB::raw('date(transaction_date)'), [$start_date, $end_date]);
                 $hide = 'hide';
             }
             $location_id = request()->get('location_id');
-            if (! empty($location_id)) {
+            if (!empty($location_id)) {
                 $stock_adjustments->where('transactions.location_id', $location_id);
             }
-
-            if (! auth()->user()->can('purchase.view') && auth()->user()->can('view_own_purchase')) {
-                $stock_adjustments->where('transactions.created_by', request()->session()->get('user.id'));
-            }
-
-            if(! auth()->user()->can('purchase.delete')){
-                $hide = 'hide';
-            }
-
+            
             return Datatables::of($stock_adjustments)
-                ->addColumn('action', '<button type="button" data-href="{{action([\App\Http\Controllers\StockAdjustmentController::class, \'show\'], [$id]) }}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-primary btn-modal" data-container=".view_modal"><i class="fa fa-eye" aria-hidden="true"></i> @lang("messages.view")</button>
+                ->addColumn('action', '<button type="button" data-href="{{  action("StockAdjustmentController@show", [$id]) }}" class="btn btn-primary btn-xs btn-modal" data-container=".view_modal"><i class="fa fa-eye" aria-hidden="true"></i> @lang("messages.view")</button>
                  &nbsp;
-                    <button type="button" data-href="{{  action([\App\Http\Controllers\StockAdjustmentController::class, \'destroy\'], [$id]) }}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-error delete_stock_adjustment '.$hide.'"><i class="fa fa-trash" aria-hidden="true"></i> @lang("messages.delete")</button>')
+                    <button type="button" data-href="{{  action("StockAdjustmentController@destroy", [$id]) }}" class="btn btn-danger btn-xs delete_stock_adjustment ' . $hide . '"><i class="fa fa-trash" aria-hidden="true"></i> @lang("messages.delete")</button>')
                 ->removeColumn('id')
                 ->editColumn(
                     'final_total',
-                    function ($row) {
-                        if (auth()->user()->can('view_purchase_price')) {
-                            return $this->transactionUtil->num_f($row->final_total, true);                     
-                         } else {
-                            return '<span>-</span>';
-                        }
-                        
-                    }
+                    '<span class="display_currency" data-currency_symbol="true">{{$final_total}}</span>'
                 )
-
                 ->editColumn(
                     'total_amount_recovered',
-                    function ($row) {
-                        if (auth()->user()->can('view_purchase_price')) {
-                            return $this->transactionUtil->num_f($row->total_amount_recovered, true);                    
-                         } else {
-                            return '<span>-</span>';
-                        }
-                    }
+                    '<span class="display_currency" data-currency_symbol="true">{{$total_amount_recovered}}</span>'
                 )
                 ->editColumn('transaction_date', '{{@format_datetime($transaction_date)}}')
                 ->editColumn('adjustment_type', function ($row) {
-                    return __('stock_adjustment.'.$row->adjustment_type);
+                    return __('stock_adjustment.' . $row->adjustment_type);
                 })
                 ->setRowAttr([
-                    'data-href' => function ($row) {
-                        return  action([\App\Http\Controllers\StockAdjustmentController::class, 'show'], [$row->id]);
-                    }, ])
+                'data-href' => function ($row) {
+                    return  action('StockAdjustmentController@show', [$row->id]);
+                }])
                 ->rawColumns(['final_total', 'action', 'total_amount_recovered'])
                 ->make(true);
         }
@@ -149,15 +128,15 @@ class StockAdjustmentController extends Controller
      */
     public function create()
     {
-        if (! auth()->user()->can('purchase.create')) {
+        if (!auth()->user()->can('purchase.create')) {
             abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
 
         //Check if subscribed or not
-        if (! $this->moduleUtil->isSubscribed($business_id)) {
-            return $this->moduleUtil->expiredResponse(action([\App\Http\Controllers\StockAdjustmentController::class, 'index']));
+        if (!$this->moduleUtil->isSubscribed($business_id)) {
+            return $this->moduleUtil->expiredResponse(action('StockAdjustmentController@index'));
         }
 
         $business_locations = BusinessLocation::forDropdown($business_id);
@@ -174,21 +153,21 @@ class StockAdjustmentController extends Controller
      */
     public function store(Request $request)
     {
-        if (! auth()->user()->can('purchase.create')) {
+        if (!auth()->user()->can('purchase.create')) {
             abort(403, 'Unauthorized action.');
         }
 
         try {
             DB::beginTransaction();
 
-            $input_data = $request->only(['location_id', 'transaction_date', 'adjustment_type', 'additional_notes', 'total_amount_recovered', 'final_total', 'ref_no']);
+            $input_data = $request->only([ 'location_id', 'transaction_date', 'adjustment_type', 'additional_notes', 'total_amount_recovered', 'final_total', 'ref_no']);
             $business_id = $request->session()->get('user.business_id');
 
             //Check if subscribed or not
-            if (! $this->moduleUtil->isSubscribed($business_id)) {
-                return $this->moduleUtil->expiredResponse(action([\App\Http\Controllers\StockAdjustmentController::class, 'index']));
+            if (!$this->moduleUtil->isSubscribed($business_id)) {
+                return $this->moduleUtil->expiredResponse(action('StockAdjustmentController@index'));
             }
-
+        
             $user_id = $request->session()->get('user.id');
 
             $input_data['type'] = 'stock_adjustment';
@@ -206,7 +185,7 @@ class StockAdjustmentController extends Controller
 
             $products = $request->input('products');
 
-            if (! empty($products)) {
+            if (!empty($products)) {
                 $product_data = [];
 
                 foreach ($products as $product) {
@@ -214,9 +193,9 @@ class StockAdjustmentController extends Controller
                         'product_id' => $product['product_id'],
                         'variation_id' => $product['variation_id'],
                         'quantity' => $this->productUtil->num_uf($product['quantity']),
-                        'unit_price' => $this->productUtil->num_uf($product['unit_price']),
+                        'unit_price' => $this->productUtil->num_uf($product['unit_price'])
                     ];
-                    if (! empty($product['lot_no_line_id'])) {
+                    if (!empty($product['lot_no_line_id'])) {
                         //Add lot_no_line_id to stock adjustment line
                         $adjustment_line['lot_no_line_id'] = $product['lot_no_line_id'];
                     }
@@ -236,34 +215,32 @@ class StockAdjustmentController extends Controller
 
                 //Map Stock adjustment & Purchase.
                 $business = ['id' => $business_id,
-                    'accounting_method' => $request->session()->get('business.accounting_method'),
-                    'location_id' => $input_data['location_id'],
-                ];
+                                'accounting_method' => $request->session()->get('business.accounting_method'),
+                                'location_id' => $input_data['location_id']
+                            ];
                 $this->transactionUtil->mapPurchaseSell($business, $stock_adjustment->stock_adjustment_lines, 'stock_adjustment');
-
-                event(new StockAdjustmentCreatedOrModified($stock_adjustment, 'added'));
 
                 $this->transactionUtil->activityLog($stock_adjustment, 'added', null, [], false);
             }
 
             $output = ['success' => 1,
-                'msg' => __('stock_adjustment.stock_adjustment_added_successfully'),
-            ];
+                            'msg' => __('stock_adjustment.stock_adjustment_added_successfully')
+                        ];
 
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
-            $msg = trans('messages.something_went_wrong');
-
+            
+            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            $msg = trans("messages.something_went_wrong");
+                
             if (get_class($e) == \App\Exceptions\PurchaseSellMismatch::class) {
                 $msg = $e->getMessage();
             }
-
+            
             $output = ['success' => 0,
-                'msg' => $msg,
-            ];
+                            'msg' => $msg
+                        ];
         }
 
         return redirect('stock-adjustments')->with('status', $output);
@@ -277,7 +254,7 @@ class StockAdjustmentController extends Controller
      */
     public function show($id)
     {
-        if (! auth()->user()->can('purchase.view')) {
+        if (!auth()->user()->can('purchase.view')) {
             abort(403, 'Unauthorized action.');
         }
         $business_id = request()->session()->get('user.business_id');
@@ -327,12 +304,12 @@ class StockAdjustmentController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        if (! auth()->user()->can('purchase.delete')) {
+        if (!auth()->user()->can('purchase.delete')) {
             abort(403, 'Unauthorized action.');
         }
         try {
@@ -346,7 +323,7 @@ class StockAdjustmentController extends Controller
 
                 //Add deleted product quantity to available quantity
                 $stock_adjustment_lines = $stock_adjustment->stock_adjustment_lines;
-                if (! empty($stock_adjustment_lines)) {
+                if (!empty($stock_adjustment_lines)) {
                     $line_ids = [];
                     foreach ($stock_adjustment_lines as $stock_adjustment_line) {
                         $this->productUtil->updateProductQuantity(
@@ -362,33 +339,29 @@ class StockAdjustmentController extends Controller
                 }
                 $stock_adjustment->delete();
 
-                event( new StockAdjustmentCreatedOrModified($stock_adjustment, 'deleted'));
-
-
                 //Remove Mapping between stock adjustment & purchase.
 
                 $output = ['success' => 1,
-                    'msg' => __('stock_adjustment.delete_success'),
-                ];
+                            'msg' => __('stock_adjustment.delete_success')
+                        ];
 
                 DB::commit();
             }
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
-
+            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            
             $output = ['success' => 0,
-                'msg' => __('messages.something_went_wrong'),
-            ];
+                            'msg' => __('messages.something_went_wrong')
+                        ];
         }
-
         return $output;
     }
 
     /**
      * Return product rows
      *
-     * @param  Request  $request
+     * @param Request $request
      * @return \Illuminate\Http\Response
      */
     public function getProductRow(Request $request)
@@ -401,7 +374,7 @@ class StockAdjustmentController extends Controller
             $business_id = $request->session()->get('user.business_id');
             $product = $this->productUtil->getDetailsFromVariation($variation_id, $business_id, $location_id);
             $product->formatted_qty_available = $this->productUtil->num_f($product->qty_available);
-            $type = ! empty($request->input('type')) ? $request->input('type') : 'stock_adjustment';
+            $type = !empty($request->input('type')) ? $request->input('type') : 'stock_adjustment';
 
             //Get lot number dropdown if enabled
             $lot_numbers = [];
@@ -428,12 +401,12 @@ class StockAdjustmentController extends Controller
     /**
      * Sets expired purchase line as stock adjustmnet
      *
-     * @param  int  $purchase_line_id
+     * @param int $purchase_line_id
      * @return json $output
      */
     public function removeExpiredStock($purchase_line_id)
     {
-        if (! auth()->user()->can('purchase.delete')) {
+        if (!auth()->user()->can('purchase.delete')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -442,7 +415,7 @@ class StockAdjustmentController extends Controller
                                     ->with(['transaction'])
                                     ->first();
 
-            if (! empty($purchase_line)) {
+            if (!empty($purchase_line)) {
                 DB::beginTransaction();
 
                 $qty_unsold = $purchase_line->quantity - $purchase_line->quantity_sold - $purchase_line->quantity_adjusted - $purchase_line->quantity_returned;
@@ -463,7 +436,7 @@ class StockAdjustmentController extends Controller
                     'location_id' => $purchase_line->transaction->location_id,
                     'adjustment_type' => 'normal',
                     'final_total' => $final_total,
-                    'ref_no' => $this->productUtil->generateReferenceNumber('stock_adjustment', $ref_count),
+                    'ref_no' => $this->productUtil->generateReferenceNumber('stock_adjustment', $ref_count)
                 ];
 
                 //Create stock adjustment transaction
@@ -474,7 +447,7 @@ class StockAdjustmentController extends Controller
                     'variation_id' => $purchase_line->variation_id,
                     'quantity' => $qty_unsold,
                     'unit_price' => $purchase_line->purchase_price_inc_tax,
-                    'removed_purchase_line' => $purchase_line->id,
+                    'removed_purchase_line' => $purchase_line->id
                 ];
 
                 //Create stock adjustment line with the purchase line
@@ -490,31 +463,30 @@ class StockAdjustmentController extends Controller
 
                 //Map Stock adjustment & Purchase.
                 $business = ['id' => $business_id,
-                    'accounting_method' => request()->session()->get('business.accounting_method'),
-                    'location_id' => $purchase_line->transaction->location_id,
-                ];
+                                'accounting_method' => request()->session()->get('business.accounting_method'),
+                                'location_id' => $purchase_line->transaction->location_id
+                            ];
                 $this->transactionUtil->mapPurchaseSell($business, $stock_adjustment->stock_adjustment_lines, 'stock_adjustment', false, $purchase_line->id);
 
                 DB::commit();
 
                 $output = ['success' => 1,
-                    'msg' => __('lang_v1.stock_removed_successfully'),
-                ];
+                            'msg' => __('lang_v1.stock_removed_successfully')
+                        ];
             }
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
-            $msg = trans('messages.something_went_wrong');
-
+            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            $msg = trans("messages.something_went_wrong");
+                
             if (get_class($e) == \App\Exceptions\PurchaseSellMismatch::class) {
                 $msg = $e->getMessage();
             }
-
+            
             $output = ['success' => 0,
-                'msg' => $msg,
-            ];
+                            'msg' => $msg
+                        ];
         }
-
         return $output;
     }
 }

@@ -45,19 +45,7 @@
               <tr>
                 <td>{{$subscription->package->name}}</td>
                 <td>1</td>
-                <td>
-                  @if (empty($subscription->coupon_code))
-                      <span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{ $subscription->package_price }}</span>
-                  @else
-                      <span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{ $subscription->original_price }}</span> <br>
-                      
-                     - <span class="display_currency" data-currency_symbol="true" data-use_page_currency="true"> {{ $subscription->original_price - $subscription->package_price }}</span>  <small class="badge bg-info">{{ $subscription->coupon_code }}</small> <br>
-
-                      <span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{ $subscription->package_price }}</span> <br>
-
-                  @endif
-                
-                </td>
+                <td><span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{ $subscription->package_price }}</span> </td>
               </tr>
             </body>
           </table>
@@ -85,10 +73,10 @@
     </div>
 
     <div class="modal-footer no-print">
-      <button type="button" class="tw-dw-btn tw-dw-btn-primary tw-text-white" aria-label="Print" 
+      <button type="button" class="btn btn-primary" aria-label="Print" 
       onclick="$(this).closest('div.modal-content').printThis();"><i class="fa fa-print"></i> @lang( 'messages.print' )
       </button>
-      <button type="button" class="tw-dw-btn tw-dw-btn-neutral tw-text-white" data-dismiss="modal">@lang( 'messages.close' )</button>
+      <button type="button" class="btn btn-default" data-dismiss="modal">@lang( 'messages.close' )</button>
     </div>
   </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->

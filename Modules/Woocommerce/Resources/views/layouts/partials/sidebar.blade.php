@@ -11,7 +11,7 @@
 
 		    <ul class="treeview-menu">
 		    	<li class="{{ $request->segment(1) == 'woocommerce' && empty($request->segment(2)) ? 'active active-sub' : '' }}">
-					<a href="{{action([\Modules\Woocommerce\Http\Controllers\WoocommerceController::class, 'index'])}}">
+					<a href="{{action('\Modules\Woocommerce\Http\Controllers\WoocommerceController@index')}}">
 						<i class="fa fa-refresh"></i>
 						<span class="title">
 							@lang('woocommerce::lang.sync')
@@ -19,7 +19,7 @@
 				  	</a>
 				</li>
 				<li class="{{ $request->segment(1) == 'woocommerce' && $request->segment(2) == 'view-sync-log' ? 'active active-sub' : '' }}">
-					<a href="{{action([\Modules\Woocommerce\Http\Controllers\WoocommerceController::class, 'viewSyncLog'])}}">
+					<a href="{{action('\Modules\Woocommerce\Http\Controllers\WoocommerceController@viewSyncLog')}}">
 						<i class="fa fa-history"></i>
 						<span class="title">
 							@lang('woocommerce::lang.sync_log')
@@ -28,7 +28,7 @@
 				</li>
 				@if(auth()->user()->can('woocommerce.access_woocommerce_api_settings') )
 				<li class="{{ $request->segment(1) == 'woocommerce' && $request->segment(2) == 'api-settings' ? 'active active-sub' : '' }}">
-					<a href="{{action([\Modules\Woocommerce\Http\Controllers\WoocommerceController::class, 'apiSettings'])}}">
+					<a href="{{action('\Modules\Woocommerce\Http\Controllers\WoocommerceController@apiSettings')}}">
 						<i class="fa fa-cogs"></i>
 						<span class="title">
 							@lang('woocommerce::lang.api_settings')

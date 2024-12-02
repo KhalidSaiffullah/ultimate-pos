@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 class CreateEssentialsKbTable extends Migration
 {
@@ -21,7 +21,7 @@ class CreateEssentialsKbTable extends Migration
             $table->longText('content')->nullable();
             $table->string('status');
             $table->string('kb_type');
-
+            
             $table->unsignedBigInteger('parent_id')
                 ->comment('id from essentials_kb table')
                 ->nullable();

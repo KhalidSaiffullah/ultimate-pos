@@ -10,19 +10,19 @@
 
     <ul class="treeview-menu">
         <li class="{{ $request->segment(2) == 'todo' ? 'active active-sub' : '' }}">
-            <a href="{{action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'index'])}}">
+            <a href="{{action('\Modules\Essentials\Http\Controllers\ToDoController@index')}}">
                 <i class="fa fa-list-ul"></i>
                 <span class="title">@lang('essentials::lang.todo')</span>
             </a>
         </li>
 		<li class="{{ ($request->segment(2) == 'document' && $request->get('type') != 'memos') ? 'active active-sub' : '' }}">
-				<a href="{{action([\Modules\Essentials\Http\Controllers\DocumentController::class, 'index'])}}">
+				<a href="{{action('\Modules\Essentials\Http\Controllers\DocumentController@index')}}">
 				<i class="fa fa-file"></i>
 				<span class="title"> @lang('essentials::lang.document') </span>
 			</a>
 		</li>
         <li class="{{ ($request->segment(2) == 'document' && $request->get('type') == 'memos') ? 'active active-sub' : '' }}">
-            <a href="{{action([\Modules\Essentials\Http\Controllers\DocumentController::class, 'index']) .'?type=memos'}}">
+            <a href="{{action('\Modules\Essentials\Http\Controllers\DocumentController@index') .'?type=memos'}}">
                 <i class="fa fa-envelope-open"></i>
                 <span class="title">
                     @lang('essentials::lang.memos')
@@ -30,7 +30,7 @@
             </a>
         </li>
         <li class="{{ $request->segment(2) == 'reminder' ? 'active active-sub' : ''}}">
-            <a href="{{action([\Modules\Essentials\Http\Controllers\ReminderController::class, 'index'])}}">
+            <a href="{{action('\Modules\Essentials\Http\Controllers\ReminderController@index')}}">
                 <i class="fa fa-bell"></i>
                 <span class="title">
                     @lang('essentials::lang.reminders')
@@ -39,7 +39,7 @@
         </li>
         @if(auth()->user()->can('essentials.view_message') || auth()->user()->can('essentials.create_message'))
         <li class="{{ $request->segment(2) == 'messages' ? 'active active-sub' : ''}}">
-            <a href="{{action([\Modules\Essentials\Http\Controllers\EssentialsMessageController::class, 'index'])}}">
+            <a href="{{action('\Modules\Essentials\Http\Controllers\EssentialsMessageController@index')}}">
                 <i class="fa fa-comments-o"></i>
                 <span class="title">
                     @lang('essentials::lang.messages')
@@ -49,7 +49,7 @@
         @endif
         @can('edit_essentials_settings')
             <li class="{{ $request->segment(2) == 'settings' ? 'active active-sub' : '' }}">
-                <a href="{{action([\Modules\Essentials\Http\Controllers\EssentialsSettingsController::class, 'edit'])}}">
+                <a href="{{action('\Modules\Essentials\Http\Controllers\EssentialsSettingsController@edit')}}">
                     <i class="fa fa-cogs"></i>
                     <span class="title">@lang('business.settings')</span>
                 </a>

@@ -1,5 +1,4 @@
 <?php
-
 return [
     'woocommerce' => 'Woocommerce',
     'api_settings' => 'API Settings',
@@ -87,7 +86,7 @@ return [
     'both' => 'Both',
     'n_products_synced_successfully' => ':count products synced successfully',
     'dont_update' => "Don't update",
-    'in_stock' => 'In stock',
+    'in_stock' => 'In stock', 
     'order_sync_settings' => 'Order Sync Settings',
     'woocommerce_order_status' => 'Woocommerce order status',
     'equivalent_pos_sell_status' => 'Equivalent POS sell status',

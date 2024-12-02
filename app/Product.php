@@ -31,11 +31,16 @@ class Product extends Model
      */
     public function getImageUrlAttribute()
     {
-        if (! empty($this->image)) {
-            $image_url = asset('/uploads/img/'.rawurlencode($this->image));
-        } else {
+        $isWooProduct = Product::where('id', $this->id)->first();
+        if (!empty($this->image) && !is_null($isWooProduct->woocommerce_product_id)) {
+            $image_url = $this->image;
+        } else if (empty($this->image)) {
             $image_url = asset('/img/default.png');
+        } else {
+            $image_url = asset('/uploads/img/' . rawurlencode($this->image));
+
         }
+
 
         return $image_url;
     }
@@ -47,12 +52,11 @@ class Product extends Model
      */
     public function getImagePathAttribute()
     {
-        if (! empty($this->image)) {
-            $image_path = public_path('uploads').'/'.config('constants.product_img_path').'/'.$this->image;
+        if (!empty($this->image) && empty($this->woocommerce_product_id)) {
+            $image_path = public_path('uploads') . '/' . config('constants.product_img_path') . '/' . $this->image;
         } else {
             $image_path = null;
         }
-
         return $image_path;
     }
 
@@ -92,7 +96,6 @@ class Product extends Model
     {
         return $this->belongsTo(\App\Category::class);
     }
-
     /**
      * Get sub-category associated with the product.
      */
@@ -102,7 +105,7 @@ class Product extends Model
     }
 
     /**
-     * Get the tax associated with the product.
+     * Get the brand associated with the product.
      */
     public function product_tax()
     {
@@ -144,7 +147,7 @@ class Product extends Model
     /**
      * Scope a query to only include active products.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeActive($query)
@@ -155,7 +158,7 @@ class Product extends Model
     /**
      * Scope a query to only include inactive products.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeInactive($query)
@@ -166,7 +169,7 @@ class Product extends Model
     /**
      * Scope a query to only include products for sales.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeProductForSales($query)
@@ -177,7 +180,7 @@ class Product extends Model
     /**
      * Scope a query to only include products not for sales.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeProductNotForSales($query)
@@ -193,7 +196,7 @@ class Product extends Model
     /**
      * Scope a query to only include products available for a location.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeForLocation($query, $location_id)
@@ -216,6 +219,11 @@ class Product extends Model
     public function media()
     {
         return $this->morphMany(\App\Media::class, 'model');
+    }
+
+    public function transaction_sell_lines()
+    {
+        return $this->hasMany(\App\TransactionSellLine::class);
     }
 
     public function rack_details()

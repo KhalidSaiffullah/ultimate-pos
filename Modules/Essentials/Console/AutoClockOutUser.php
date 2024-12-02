@@ -2,9 +2,11 @@
 
 namespace Modules\Essentials\Console;
 
-use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputArgument;
 use Modules\Essentials\Entities\EssentialsAttendance;
+use Carbon\Carbon;
 
 class AutoClockOutUser extends Command
 {
@@ -13,7 +15,7 @@ class AutoClockOutUser extends Command
      *
      * @var string
      */
-    protected $signature = 'pos:autoClockOutUser';
+    protected $name = 'pos:autoClockOutUser';
 
     /**
      * The console command description.
@@ -38,7 +40,7 @@ class AutoClockOutUser extends Command
      * @return mixed
      */
     public function handle()
-    {
+    {   
         $attendances = EssentialsAttendance::join('essentials_shifts as es', 'essentials_attendances.essentials_shift_id', 'es.id')
             ->where('es.is_allowed_auto_clockout', 1)
             ->whereNull('essentials_attendances.clock_out_time')

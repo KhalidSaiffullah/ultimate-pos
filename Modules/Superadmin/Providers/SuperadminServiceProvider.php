@@ -13,6 +13,13 @@ use Modules\Superadmin\Entities\SuperadminFrontendPage;
 class SuperadminServiceProvider extends ServiceProvider
 {
     /**
+     * Indicates if loading of the provider is deferred.
+     *
+     * @var bool
+     */
+    protected $defer = false;
+
+    /**
      * Boot the application events.
      *
      * @return void
@@ -23,8 +30,7 @@ class SuperadminServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->registerFactories();
-        $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
-        $this->registerScheduleCommands();
+        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
 
         view::composer('superadmin::layouts.partials.active_subscription', function ($view) {
             $business_id = session()->get('user.business_id');
@@ -74,20 +80,7 @@ class SuperadminServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->register(RouteServiceProvider::class);
         $this->registerCommands();
-    }
-
-    /**
-     * Register commands.
-     *
-     * @return void
-     */
-    protected function registerCommands()
-    {
-        $this->commands([
-            \Modules\Superadmin\Console\SubscriptionExpiryAlert::class
-        ]);
     }
 
     /**
@@ -101,7 +94,8 @@ class SuperadminServiceProvider extends ServiceProvider
             __DIR__.'/../Config/config.php' => config_path('superadmin.php'),
         ], 'config');
         $this->mergeConfigFrom(
-            __DIR__.'/../Config/config.php', 'superadmin'
+            __DIR__.'/../Config/config.php',
+            'superadmin'
         );
     }
 
@@ -117,12 +111,12 @@ class SuperadminServiceProvider extends ServiceProvider
         $sourcePath = __DIR__.'/../Resources/views';
 
         $this->publishes([
-            $sourcePath => $viewPath,
+            $sourcePath => $viewPath
         ], 'views');
 
         $this->loadViewsFrom(array_merge(array_map(function ($path) {
-            return $path.'/modules/superadmin';
-        }, config('view.paths')), [$sourcePath]), 'superadmin');
+            return $path . '/modules/superadmin';
+        }, \Config::get('view.paths')), [$sourcePath]), 'superadmin');
     }
 
     /**
@@ -137,7 +131,7 @@ class SuperadminServiceProvider extends ServiceProvider
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, 'superadmin');
         } else {
-            $this->loadTranslationsFrom(__DIR__.'/../Resources/lang', 'superadmin');
+            $this->loadTranslationsFrom(__DIR__ .'/../Resources/lang', 'superadmin');
         }
     }
 
@@ -148,8 +142,8 @@ class SuperadminServiceProvider extends ServiceProvider
      */
     public function registerFactories()
     {
-        if (! app()->environment('production') && $this->app->runningInConsole()) {
-            app(Factory::class)->load(__DIR__.'/../Database/factories');
+        if (! app()->environment('production')) {
+            app(Factory::class)->load(__DIR__ . '/../Database/factories');
         }
     }
 
@@ -161,5 +155,17 @@ class SuperadminServiceProvider extends ServiceProvider
     public function provides()
     {
         return [];
+    }
+
+    /**
+     * Register commands.
+     *
+     * @return void
+     */
+    protected function registerCommands()
+    {
+        $this->commands([
+            \Modules\Superadmin\Console\SubscriptionExpiryAlert::class
+        ]);
     }
 }

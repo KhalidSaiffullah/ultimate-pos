@@ -2,25 +2,26 @@
 
 namespace Modules\Superadmin\Http\Controllers;
 
-use App\Business;
-use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Modules\Superadmin\Entities\SuperadminCommunicatorLog;
-use Modules\Superadmin\Notifications\SuperadminCommunicator;
-use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Routing\Controller;
 
-class CommunicatorController extends Controller
+use App\Business;
+use App\User;
+
+use Modules\Superadmin\Notifications\SuperadminCommunicator;
+use Modules\Superadmin\Entities\SuperadminCommunicatorLog;
+
+use Yajra\DataTables\Facades\DataTables;
+
+class CommunicatorController extends BaseController
 {
     /**
      * Display a listing of the resource.
-     *
      * @return Response
      */
     public function index()
     {
-        if (! auth()->user()->can('superadmin')) {
+        if (!auth()->user()->can('superadmin')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -33,25 +34,23 @@ class CommunicatorController extends Controller
 
     /**
      * Sends notification to the required business owners.
-     *
-     * @param  Request  $request
+     * @param  Request $request
      * @return Response
      */
     public function send(Request $request)
     {
-        if (! auth()->user()->can('superadmin')) {
+        if (!auth()->user()->can('superadmin')) {
             abort(403, 'Unauthorized action.');
         }
 
         //Disable in demo
         if (config('app.env') == 'demo') {
             $output = ['success' => 0,
-                'msg' => 'Feature disabled in demo!!',
-            ];
-
+                            'msg' => 'Feature disabled in demo!!'
+                        ];
             return back()->with('status', $output);
         }
-
+        
         $input = $request->input();
 
         //Get business owners
@@ -68,13 +67,13 @@ class CommunicatorController extends Controller
         SuperadminCommunicatorLog::create([
             'business_ids' => $input['recipients'],
             'subject' => $input['subject'],
-            'message' => $input['message'],
+            'message' => $input['message']
         ]);
 
         $output = ['success' => 1,
-            'msg' => __('lang_v1.success'),
-        ];
-
+                    'msg' => __('lang_v1.success')
+                ];
+                
         return back()->with('status', $output);
     }
 

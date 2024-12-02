@@ -6,12 +6,12 @@
 @include('essentials::layouts.nav_hrm')
 <!-- Content Header (Page header) -->
 <section class="content-header">
-  <h1 class="tw-text-sm md:tw-text-base tw-text-gray-700 tw-font-semibold">@lang( 'essentials::lang.edit_payroll' )</h1>
+  <h1>@lang( 'essentials::lang.edit_payroll' )</h1>
 </section>
 
 <!-- Main content -->
 <section class="content">
-{!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'update'], [$payroll->id]), 'method' => 'put', 'id' => 'add_payroll_form' ]) !!}
+{!! Form::open(['url' => action('\Modules\Essentials\Http\Controllers\PayrollController@update', [$payroll->id]), 'method' => 'put', 'id' => 'add_payroll_form' ]) !!}
     <div class="row">
         <div class="col-md-12">
             @component('components.widget')
@@ -127,7 +127,7 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <button type="submit" class="tw-dw-btn tw-dw-btn-primary tw-text-white pull-right" >@lang( 'messages.update' )</button>
+            <button type="submit" class="btn btn-primary pull-right" >@lang( 'messages.update' )</button>
         </div>
     </div>
 {!! Form::close() !!}

@@ -6,13 +6,13 @@
 <!-- Main content -->
 <section class="content">
 
-	  {{-- <div class="box box-solid">
-      <div class="box-header">
+	<div class="box box-solid">
+        <div class="box-header">
         	<h3 class="box-title">@lang( 'superadmin::lang.add_new_business' ) <small>(@lang( 'superadmin::lang.add_business_help' ))</small></h3>
         </div>
 
         <div class="box-body">
-                {!! Form::open(['url' => action([\Modules\Superadmin\Http\Controllers\BusinessController::class, 'store']), 'method' => 'post', 'id' => 'business_register_form','files' => true ]) !!}
+                {!! Form::open(['url' => action('\Modules\Superadmin\Http\Controllers\BusinessController@store'), 'method' => 'post', 'id' => 'business_register_form','files' => true ]) !!}
                     @include('business.partials.register_form')
                     <div class="clearfix"></div>
                     <div class="col-md-12"><hr></div>
@@ -35,55 +35,9 @@
                          </div>
                     </div>
 
-                <div class="col-md-12 text-center">
-                    {!! Form::submit(__('messages.submit'), ['class' => 'btn btn-success btn-big']) !!}
-                </div>
-                    
+                    {!! Form::submit(__('messages.submit'), ['class' => 'btn btn-success pull-right']) !!}
                 {!! Form::close() !!}
-        </div> --}}
-
-
-        <div
-	class="tw-transition-all lg:tw-col-span-1 tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw-translate-y-0.5 tw-ring-gray-200">
-	<div class="tw-p-4 sm:tw-p-5">
-		<div class="tw-flex tw-justify-start tw-gap-2.5">
-			<h3 class="box-title">@lang( 'superadmin::lang.add_new_business' ) <small>(@lang( 'superadmin::lang.add_business_help' ))</small></h3>
-		</div>
-		<div class="tw-flow-root tw-mt-5 tw-border-b tw-border-gray-200">
-			<div class="tw-mx-4 tw--my-2 tw-overflow-x-auto sm:tw--mx-5">
-				<div class="tw-inline-block tw-min-w-full tw-py-2 tw-align-middle sm:tw-px-5">
-					{!! Form::open(['url' => action([\Modules\Superadmin\Http\Controllers\BusinessController::class, 'store']), 'method' => 'post', 'id' => 'business_register_form','files' => true ]) !!}
-                    @include('business.partials.register_form')
-                    <div class="clearfix"></div>
-                    <div class="col-md-12"><hr></div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            {!! Form::label('package_id', __( 'superadmin::lang.subscription_packages' ) . ':') !!}
-                            {!! Form::select('package_id', $packages, null, ['class' => 'form-control', 'placeholder' => __( 'messages.please_select' ) ]); !!}
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            {!! Form::label('paid_via', __( 'superadmin::lang.paid_via' ) . ':') !!}
-                            {!! Form::select('paid_via', $gateways, null, ['class' => 'form-control', 'placeholder' => __( 'messages.please_select' ) ]); !!}
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            {!! Form::label('payment_transaction_id', __( 'superadmin::lang.payment_transaction_id' ) . ':') !!}
-                            {!! Form::text('payment_transaction_id', null, ['class' => 'form-control', 'placeholder' => __( 'superadmin::lang.payment_transaction_id' ) ]); !!}
-                         </div>
-                    </div>
-
-                <div class="col-md-12 text-center">
-                    {!! Form::submit(__('messages.submit'), ['class' => 'tw-dw-btn tw-dw-btn-success tw-text-white tw-dw-btn-lg']) !!}
-                </div>
-                    
-                {!! Form::close() !!}
-				</div>
-			</div>
-		</div>
-	</div>
+        </div>
     </div>
 
     <div class="modal fade brands_modal" tabindex="-1" role="dialog" 

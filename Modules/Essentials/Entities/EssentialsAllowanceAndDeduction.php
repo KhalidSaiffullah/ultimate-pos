@@ -2,8 +2,8 @@
 
 namespace Modules\Essentials\Entities;
 
-use App\Utils\Util;
 use Illuminate\Database\Eloquent\Model;
+use App\Utils\Util;
 
 class EssentialsAllowanceAndDeduction extends Model
 {
@@ -15,10 +15,10 @@ class EssentialsAllowanceAndDeduction extends Model
     protected $guarded = ['id'];
 
     /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
+    * The table associated with the model.
+    *
+    * @var string
+    */
     protected $table = 'essentials_allowances_and_deductions';
 
     public function employees()
@@ -27,7 +27,7 @@ class EssentialsAllowanceAndDeduction extends Model
     }
 
     public static function forDropdown($business_id)
-    {
+    {   
         $ads = EssentialsAllowanceAndDeduction::whereNull('applicable_date')
                     ->where('business_id', $business_id)
                     ->select('id', 'description', 'type', 'amount', 'amount_type')
@@ -36,6 +36,7 @@ class EssentialsAllowanceAndDeduction extends Model
         $util = new Util();
         $pay_components = [];
         foreach ($ads as $ad) {
+
             if ($ad->amount_type != 'percent') {
                 $amount = $util->num_f($ad->amount, true);
             } else {
@@ -43,7 +44,7 @@ class EssentialsAllowanceAndDeduction extends Model
                 $amount .= '%';
             }
 
-            $pay_components[$ad->id] = $ad->description.' ('.$amount.' '.__('essentials::lang.'.$ad->type).')';
+            $pay_components[$ad->id] = $ad->description .' ('. $amount .' '.__('essentials::lang.'.$ad->type) .')';
         }
 
         return $pay_components;

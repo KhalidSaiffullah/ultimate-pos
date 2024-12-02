@@ -25,7 +25,7 @@ class PasswordUpdateNotification extends Notification
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -36,14 +36,14 @@ class PasswordUpdateNotification extends Notification
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
     {
         return (new MailMessage)
                     ->subject(__('superadmin::lang.password_updated'))
-                    ->greeting(__('restaurant.hello_name', ['name' => $notifiable->first_name]))
+                    ->greeting(__('restaurant.hello_name', ['name' =>  $notifiable->first_name]))
                     ->line(__('superadmin::lang.your_password_updated_successfully'))
                     ->line(__('superadmin::lang.your_new_password_is', ['password' => $this->password]))
                     ->action(__('lang_v1.login'), route('login'));
@@ -52,7 +52,7 @@ class PasswordUpdateNotification extends Notification
     /**
      * Get the array representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return array
      */
     public function toArray($notifiable)

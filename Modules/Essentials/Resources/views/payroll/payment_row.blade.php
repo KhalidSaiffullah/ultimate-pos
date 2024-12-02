@@ -1,22 +1,10 @@
-
-{!! Form::label("amount_".$id , __('purchase.amount') . ':*') !!}
-<div class="input-group">
-	<span class="input-group-addon">
-		<i class="fas fa-money-bill-alt"></i>
-	</span>
-	<input type="text" id = "amount_".$id,  class="form-control input_number payment_amount" name="payments[{{$id}}][final_total]" value="{{$payroll['amount']}}" data-rule-max-value = "{{$payroll['amount']}}" data-msg-max-value = "{{ __('lang_v1.max_amount_to_be_paid_is', ['amount' => $payroll['amount_formated']]) }}">
-</div>
-
-<div class="form-group">
 {!! Form::label("paid_on_".$id , __('lang_v1.paid_on') . ':*') !!}
-	<div class="input-group">
-	<span class="input-group-addon">
-		<i class="fa fa-calendar"></i>
-	</span>
-	{!! Form::text('payments['.$id.'][paid_on]', @format_datetime($payroll['paid_on']), ['class' => 'form-control input-sm paid_on', 'readonly', 'required', 'id' => 'paid_on_'.$id, 'data-id' => $id]); !!}
-	</div>
+<div class="input-group">
+  <span class="input-group-addon">
+    <i class="fa fa-calendar"></i>
+  </span>
+  {!! Form::text('payments['.$id.'][paid_on]', @format_datetime($payroll['paid_on']), ['class' => 'form-control input-sm paid_on', 'readonly', 'required', 'id' => 'paid_on_'.$id, 'data-id' => $id]); !!}
 </div>
-
 
 @if(!empty($accounts))
 	{!! Form::label("account_id_".$id , __('lang_v1.payment_account') . ':') !!}
@@ -27,11 +15,6 @@
         {!! Form::select('payments['.$id.'][account_id]', $accounts, null , ['class' => 'form-control input-sm select2', 'id' => "account_id_".$id, 'style' => 'width:100%;', 'data-id' => $id]); !!}
       </div>
 @endif
-
-<div class="form-group">
-{!! Form::label("payment_note_".$id , __('lang_v1.payment_note') . ':') !!}
-	{!! Form::textarea('payments['.$id.'][payment_note]', null, ['class' => 'form-control', 'placeholder' => __( 'lang_v1.payment_note' ), 'rows' => 2, 'id' => "payment_note_".$id]); !!}
-</div>
 
 {!! Form::label("method_".$id , __('purchase.payment_method') . ':*') !!}
 <div class="input-group">

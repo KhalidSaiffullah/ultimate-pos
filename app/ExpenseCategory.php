@@ -13,6 +13,7 @@ class ExpenseCategory extends Model
      *
      * @var array
      */
+    
 
     /**
      * The attributes that aren't mass assignable.
@@ -26,10 +27,10 @@ class ExpenseCategory extends Model
         return $this->hasMany(\App\ExpenseCategory::class, 'parent_id');
     }
 
-    /**
+     /**
      * Scope a query to only include main categories.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeOnlyParent($query)

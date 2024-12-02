@@ -17,7 +17,7 @@ class CreatePackagesTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->text('description');
-            $table->integer('location_count')->comment('No. of Business Locations, 0 = infinite option.');
+            $table->integer('location_count')->comment("No. of Business Locations, 0 = infinite option.");
             $table->integer('user_count');
             $table->integer('product_count');
             $table->integer('invoice_count');

@@ -1,7 +1,7 @@
 <!-- Modal -->
 <div class="modal-dialog" role="document">
     <div class="modal-content">
-     {!! Form::open(['url' => action([\Modules\Superadmin\Http\Controllers\SuperadminSubscriptionsController::class, 'update'],$subscription->id), 'method' => 'PUT', 'id' => 'status_change_form']) !!}
+     {!! Form::open(['url' => action('\Modules\Superadmin\Http\Controllers\SuperadminSubscriptionsController@update',$subscription->id), 'method' => 'PUT', 'id' => 'status_change_form']) !!}
 
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -23,8 +23,8 @@
       </div>
 
       <div class="modal-footer">
-        <button type="submit" class="tw-dw-btn tw-dw-btn-primary tw-text-white">@lang( "superadmin::lang.update")</button>
-        <button type="button" class="tw-dw-btn tw-dw-btn-neutral tw-text-white" data-dismiss="modal">@lang( "superadmin::lang.close")</button>
+        <button type="submit" class="btn btn-primary">@lang( "superadmin::lang.update")</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">@lang( "superadmin::lang.close")</button>
       </div>
       {!! Form::close() !!}
     </div>

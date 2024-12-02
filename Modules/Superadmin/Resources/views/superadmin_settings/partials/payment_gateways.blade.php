@@ -39,34 +39,46 @@
             <div class="form-group">
             	{!! Form::label('PAYPAL_MODE', __('superadmin::lang.paypal_mode') . ':') !!}
             	{!! Form::select('PAYPAL_MODE',['live' => 'Live', 'sandbox' => 'Sandbox'],  $default_values['PAYPAL_MODE'], ['class' => 'form-control','placeholder' => __('messages.please_select')]); !!}
-                <b><span class="text-danger">@lang('superadmin::lang.important')</span>@lang('superadmin::lang.paypal_info') </b>
             </div>
         </div>
         <div class="clearfix"></div>
         <div class="col-xs-4">
             <div class="form-group">
-            	{!! Form::label('PAYPAL_CLIENT_ID', __('superadmin::lang.paypal_client_id') . ':') !!}
-            	{!! Form::text('PAYPAL_CLIENT_ID', $default_values['PAYPAL_CLIENT_ID'], ['class' => 'form-control','placeholder' =>'Paypal client id']); !!}
+            	{!! Form::label('PAYPAL_SANDBOX_API_USERNAME', __('superadmin::lang.paypal_sandbox_api_username') . ':') !!}
+            	{!! Form::text('PAYPAL_SANDBOX_API_USERNAME', $default_values['PAYPAL_SANDBOX_API_USERNAME'], ['class' => 'form-control','placeholder' => __('superadmin::lang.paypal_sandbox_api_username')]); !!}
             </div>
         </div>
         <div class="col-xs-4">
             <div class="form-group">
-            	{!! Form::label('PAYPAL_APP_SECRET', __('superadmin::lang.paypal_aap_secret') . ':') !!}
-            	{!! Form::text('PAYPAL_APP_SECRET', $default_values['PAYPAL_APP_SECRET'], ['class' => 'form-control','placeholder' =>'Paypal app secret']); !!}
+            	{!! Form::label('PAYPAL_SANDBOX_API_PASSWORD', __('superadmin::lang.paypal_sandbox_api_password') . ':') !!}
+            	{!! Form::text('PAYPAL_SANDBOX_API_PASSWORD', $default_values['PAYPAL_SANDBOX_API_PASSWORD'], ['class' => 'form-control','placeholder' => __('superadmin::lang.paypal_sandbox_api_password')]); !!}
             </div>
         </div>
-
         <div class="col-xs-4">
-            <b>@lang('superadmin::lang.step_for_paypal') :</b><br/>
-            1. @lang('superadmin::lang.login_to') <a href="https://developer.paypal.com/home" target="_blank">@lang('superadmin::lang.developer_account') </a>.<br/>
-            @lang('superadmin::lang.paypal_step_2')<br/>
-            @lang('superadmin::lang.paypal_step_3')<br/>
-            @lang('superadmin::lang.paypal_step_4')<br/>
-            @lang('superadmin::lang.paypal_step_5')<br/>
-            @lang('superadmin::lang.paypal_step_6')<br/>
+            <div class="form-group">
+            	{!! Form::label('PAYPAL_SANDBOX_API_SECRET', __('superadmin::lang.paypal_sandbox_api_secret') . ':') !!}
+            	{!! Form::text('PAYPAL_SANDBOX_API_SECRET', $default_values['PAYPAL_SANDBOX_API_SECRET'], ['class' => 'form-control','placeholder' => __('superadmin::lang.paypal_sandbox_api_secret')]); !!}
+            </div>
         </div>
-        
-        
+        <div class="clearfix"></div>
+        <div class="col-xs-4">
+            <div class="form-group">
+            	{!! Form::label('PAYPAL_LIVE_API_USERNAME', __('superadmin::lang.paypal_live_api_username') . ':') !!}
+            	{!! Form::text('PAYPAL_LIVE_API_USERNAME', $default_values['PAYPAL_LIVE_API_USERNAME'], ['class' => 'form-control','placeholder' => __('superadmin::lang.paypal_live_api_username')]); !!}
+            </div>
+        </div>
+        <div class="col-xs-4">
+            <div class="form-group">
+            	{!! Form::label('PAYPAL_LIVE_API_PASSWORD', __('superadmin::lang.paypal_live_api_password') . ':') !!}
+            	{!! Form::text('PAYPAL_LIVE_API_PASSWORD', $default_values['PAYPAL_LIVE_API_PASSWORD'], ['class' => 'form-control','placeholder' => __('superadmin::lang.paypal_live_api_password')]); !!}
+            </div>
+        </div>
+        <div class="col-xs-4">
+            <div class="form-group">
+            	{!! Form::label('PAYPAL_LIVE_API_SECRET', __('superadmin::lang.paypal_live_api_secret') . ':') !!}
+            	{!! Form::text('PAYPAL_LIVE_API_SECRET', $default_values['PAYPAL_LIVE_API_SECRET'], ['class' => 'form-control','placeholder' => __('superadmin::lang.paypal_live_api_secret')]); !!}
+            </div>
+        </div>
 
         <div class="clearfix"></div>
         
@@ -153,35 +165,6 @@
                     @lang('superadmin::lang.flutterwave_help_text')
                 </a>
             </p>
-        </div>
-        <h4>@lang('superadmin::lang.my_fatoorah'): </h4>
-        <div class="col-xs-3">
-            <div class="form-group">
-                {!! Form::label('MY_FATOORAH_API_KEY', 'Api key:') !!}
-                {!! Form::text('MY_FATOORAH_API_KEY', $default_values['MY_FATOORAH_API_KEY'], ['class' => 'form-control']); !!}
-            </div>
-        </div>
-        <div class="col-xs-3">
-            <div class="form-group">
-                {!! Form::label('MY_FATOORAH_COUNTRY_ISO', 'Country iso:') !!}
-                {!! Form::select('MY_FATOORAH_COUNTRY_ISO',["KWT" => "KWT", "SAU" => "SAU", "ARE" => "ARE", "QAT" => "QAT", "BHR" => "BHR", "OMN" => "OMN", "JOD" => "JOD", "EGY" => "EGY"],  $default_values['MY_FATOORAH_COUNTRY_ISO'], ['class' => 'form-control']); !!}
-
-            </div>
-        </div>
-        <div class="col-xs-3">
-            <div class="form-group">
-                {!! Form::label('MY_FATOORAH_IS_TEST', 'Is Test?') !!}
-                {!! Form::select('MY_FATOORAH_IS_TEST',['false' => 'False', 'true' => 'True'],  $default_values['MY_FATOORAH_IS_TEST'], ['class' => 'form-control']); !!}
-            </div>
-        </div>
-        <div class="col-xs-3">
-            <a href="https://docs.myfatoorah.com/docs/overview" target="_blank">@lang('superadmin::lang.api_key_document')</a> <br>
-            <b>@lang('superadmin::lang.fatoorah_heahing')</b><br/>
-            1. @lang('superadmin::lang.login_to') <a href="https://portal.myfatoorah.com/En/All/Account/LogIn" target="_blank">@lang('superadmin::lang.myfatoorah_account')</a> @lang('superadmin::lang.using_your_super_master_account')<br/>
-            @lang('superadmin::lang.fatoorah_step_2')<br/>
-            @lang('superadmin::lang.fatoorah_step_3')<br/>
-            @lang('superadmin::lang.fatoorah_step_4')<br/>
-            @lang('superadmin::lang.fatoorah_step_5')<br/>
         </div>
         <div class="col-xs-12">
             <br/>

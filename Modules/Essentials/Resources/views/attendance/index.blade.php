@@ -4,7 +4,7 @@
 @section('content')
 @include('essentials::layouts.nav_hrm')
 <section class="content-header">
-    <h1 class="tw-text-xl md:tw-text-3xl tw-font-bold tw-text-black">@lang('essentials::lang.attendance')
+    <h1>@lang('essentials::lang.attendance')
     </h1>
 </section>
 <!-- Main content -->
@@ -87,16 +87,7 @@
                 <div class="tab-content">
                     @can('essentials.crud_all_attendance')
                         <div class="tab-pane active" id="shifts_tab">
-                            <button type="button" class="tw-dw-btn tw-bg-gradient-to-r tw-from-indigo-600 tw-to-blue-500 tw-font-bold tw-text-white tw-border-none tw-rounded-full pull-right"
-                                data-toggle="modal" data-target="#shift_modal">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                    class="icon icon-tabler icons-tabler-outline icon-tabler-plus">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                    <path d="M12 5l0 14" />
-                                    <path d="M5 12l14 0" />
-                                </svg> @lang('messages.add')
-                            </button>
+                            <button type="button" class="btn btn-primary pull-right"  data-toggle="modal" data-target="#shift_modal"> <i class="fa fa-plus"></i> @lang( 'messages.add' )</button>
                             <br>
                             <br>
                             <br>
@@ -134,16 +125,10 @@
                             </div>
                             @can('essentials.crud_all_attendance')
                             <div class="col-md-6 spacer">
-                            <button type="button" class="tw-dw-btn tw-bg-gradient-to-r tw-from-indigo-600 tw-to-blue-500 tw-font-bold tw-text-white tw-border-none tw-rounded-full pull-right btn-modal"
-                                data-href="{{action([\Modules\Essentials\Http\Controllers\AttendanceController::class, 'create'])}}" data-container="#attendance_modal">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                    class="icon icon-tabler icons-tabler-outline icon-tabler-plus">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                    <path d="M12 5l0 14" />
-                                    <path d="M5 12l14 0" />
-                                </svg> @lang( 'essentials::lang.add_latest_attendance' )
-                            </button>
+                                <button type="button" class="btn btn-primary btn-modal pull-right" data-href="{{action('\Modules\Essentials\Http\Controllers\AttendanceController@create')}}" data-container="#attendance_modal">
+                                    <i class="fa fa-plus"></i>
+                                    @lang( 'essentials::lang.add_latest_attendance' )
+                                </button>
                             </div>
                             @endcan
                         </div>
@@ -214,7 +199,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    "url": "{{action([\Modules\Essentials\Http\Controllers\AttendanceController::class, 'index'])}}",
+                    "url": "{{action('\Modules\Essentials\Http\Controllers\AttendanceController@index')}}",
                     "data" : function(d) {
                         if ($('#employee_id').length) {
                             d.employee_id = $('#employee_id').val();
@@ -292,7 +277,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    "url": "{{action([\Modules\Essentials\Http\Controllers\ShiftController::class, 'index'])}}",
+                    "url": "{{action('\Modules\Essentials\Http\Controllers\ShiftController@index')}}",
                 },
                 columnDefs: [
                     {
@@ -498,7 +483,7 @@
             var start = $('#date_range').data('daterangepicker').startDate.format('YYYY-MM-DD');
             var end = $('#date_range').data('daterangepicker').endDate.format('YYYY-MM-DD');
             $.ajax({
-                url: '{{action([\Modules\Essentials\Http\Controllers\AttendanceController::class, 'getUserAttendanceSummary'])}}?user_id=' + user_id + '&start_date=' + start + '&end_date=' + end ,
+                url: '{{action("\Modules\Essentials\Http\Controllers\AttendanceController@getUserAttendanceSummary")}}?user_id=' + user_id + '&start_date=' + start + '&end_date=' + end ,
                 dataType: 'html',
                 success: function(response) {
                     $('#total_work_hours').html(response);
@@ -566,7 +551,7 @@
     function get_attendance_by_shift() {
         data = {date: $('#attendance_by_shift_date_filter').val()};
         $.ajax({
-            url: "{{action([\Modules\Essentials\Http\Controllers\AttendanceController::class, 'getAttendanceByShift'])}}",
+            url: "{{action('\Modules\Essentials\Http\Controllers\AttendanceController@getAttendanceByShift')}}",
             data: data,
             dataType: 'html',
             success: function(result) {
@@ -580,7 +565,7 @@
                 end_date: $('#attendance_by_date_filter').data('daterangepicker').endDate.format('YYYY-MM-DD')
             };
         $.ajax({
-            url: "{{action([\Modules\Essentials\Http\Controllers\AttendanceController::class, 'getAttendanceByDate'])}}",
+            url: "{{action('\Modules\Essentials\Http\Controllers\AttendanceController@getAttendanceByDate')}}",
             data: data,
             dataType: 'html',
             success: function(result) {

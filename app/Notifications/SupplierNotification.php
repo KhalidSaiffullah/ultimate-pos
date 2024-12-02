@@ -5,6 +5,7 @@ namespace App\Notifications;
 use App\Utils\NotificationUtil;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
+
 use Illuminate\Notifications\Notification;
 
 class SupplierNotification extends Notification
@@ -12,9 +13,7 @@ class SupplierNotification extends Notification
     use Queueable;
 
     protected $notificationInfo;
-
     protected $cc;
-
     protected $bcc;
 
     /**
@@ -28,8 +27,8 @@ class SupplierNotification extends Notification
 
         $notificationUtil = new NotificationUtil();
         $notificationUtil->configureEmail($notificationInfo);
-        $this->cc = ! empty($notificationInfo['cc']) ? $notificationInfo['cc'] : null;
-        $this->bcc = ! empty($notificationInfo['bcc']) ? $notificationInfo['bcc'] : null;
+        $this->cc = !empty($notificationInfo['cc']) ? $notificationInfo['cc'] : null;
+        $this->bcc = !empty($notificationInfo['bcc']) ? $notificationInfo['bcc'] : null;
     }
 
     /**
@@ -58,19 +57,19 @@ class SupplierNotification extends Notification
                         'emails.plain_html',
                         ['content' => $data['email_body']]
                     );
-        if (! empty($this->cc)) {
+        if (!empty($this->cc)) {
             $mail->cc($this->cc);
         }
-        if (! empty($this->bcc)) {
+        if (!empty($this->bcc)) {
             $mail->bcc($this->bcc);
         }
 
-        if (! empty($data['pdf']) && ! empty($data['pdf_name'])) {
+        if (!empty($data['pdf']) && !empty($data['pdf_name'])) {
             $mail->attachData($data['pdf']->Output($data['pdf_name'], 'S'), $data['pdf_name'], [
                 'mime' => 'application/pdf',
             ]);
         }
-
+        
         return $mail;
     }
 

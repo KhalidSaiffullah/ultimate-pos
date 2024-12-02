@@ -3,8 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Business;
+
 use App\Transaction;
 use App\Utils\NotificationUtil;
+
 use App\Utils\ProductUtil;
 use App\Utils\TransactionUtil;
 use Illuminate\Console\Command;
@@ -79,7 +81,7 @@ class UpdateRewardPoints extends Command
                                         ->get();
 
                 foreach ($transactions as $transaction) {
-                    if (! empty($transaction->total_rp_expired) && $transaction->contact->total_rp_used < $transaction->total_rp_expired) {
+                    if (!empty($transaction->total_rp_expired) && $transaction->contact->total_rp_used < $transaction->total_rp_expired) {
                         $contact = $transaction->contact;
 
                         $diff = $transaction->total_rp_expired - $contact->total_rp_used;
@@ -94,9 +96,9 @@ class UpdateRewardPoints extends Command
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
 
-            exit($e->getMessage());
+            die($e->getMessage());
         }
     }
 }

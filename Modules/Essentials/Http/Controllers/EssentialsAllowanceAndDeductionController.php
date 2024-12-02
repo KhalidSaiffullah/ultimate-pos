@@ -15,15 +15,15 @@ class EssentialsAllowanceAndDeductionController extends Controller
 {
     /**
      * All Utils instance.
+     *
      */
     protected $moduleUtil;
-
     protected $essentialsUtil;
 
     /**
      * Constructor
      *
-     * @param  ProductUtils  $product
+     * @param ProductUtils $product
      * @return void
      */
     public function __construct(ModuleUtil $moduleUtil, EssentialsUtil $essentialsUtil)
@@ -34,34 +34,32 @@ class EssentialsAllowanceAndDeductionController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
      * @return Response
      */
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
 
-        if (! auth()->user()->can('essentials.add_allowance_and_deduction') && ! auth()->user()->can('essentials.view_allowance_and_deduction')) {
+        if (!auth()->user()->can('essentials.add_allowance_and_deduction') && !auth()->user()->can('essentials.view_allowance_and_deduction')) {
             abort(403, 'Unauthorized action.');
         }
 
         if (request()->ajax()) {
             $allowances = EssentialsAllowanceAndDeduction::where('business_id', $business_id)
                 ->with('employees');
-
             return Datatables::of($allowances)
                 ->addColumn(
                     'action',
                     function ($row) {
                         $html = '';
                         if (auth()->user()->can('essentials.add_allowance_and_deduction')) {
-                            $html .= '<button data-href="'.action([\Modules\Essentials\Http\Controllers\EssentialsAllowanceAndDeductionController::class, 'edit'], [$row->id]).'" data-container="#add_allowance_deduction_modal" class="btn-modal tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-primary"><i class="fa fa-edit" aria-hidden="true"></i> '.__('messages.edit').'</button>';
+                            $html .= '<button data-href="' . action('\Modules\Essentials\Http\Controllers\EssentialsAllowanceAndDeductionController@edit', [$row->id]) . '" data-container="#add_allowance_deduction_modal" class="btn-modal btn btn-primary btn-xs"><i class="fa fa-edit" aria-hidden="true"></i> ' . __("messages.edit") . '</button>';
 
-                            $html .= '&nbsp; <button data-href="'.action([\Modules\Essentials\Http\Controllers\EssentialsAllowanceAndDeductionController::class, 'destroy'], [$row->id]).'" class="delete-allowance tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-error"><i class="fa fa-trash" aria-hidden="true"></i> '.__('messages.delete').'</button>';
+                            $html .= '&nbsp; <button data-href="' . action('\Modules\Essentials\Http\Controllers\EssentialsAllowanceAndDeductionController@destroy', [$row->id]) . '" class="delete-allowance btn btn-danger btn-xs"><i class="fa fa-trash" aria-hidden="true"></i> ' . __("messages.delete") . '</button>';
                         }
 
                         return $html;
@@ -77,7 +75,6 @@ class EssentialsAllowanceAndDeductionController extends Controller
                     foreach ($row->employees as $employee) {
                         $employees[] = $employee->user_full_name;
                     }
-
                     return implode(', ', $employees);
                 })
                 ->rawColumns(['action', 'amount'])
@@ -87,14 +84,13 @@ class EssentialsAllowanceAndDeductionController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
      * @return Response
      */
     public function create()
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || ! auth()->user()->can('essentials.add_allowance_and_deduction')) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || !auth()->user()->can('essentials.add_allowance_and_deduction')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -105,15 +101,14 @@ class EssentialsAllowanceAndDeductionController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  Request  $request
+     * @param  Request $request
      * @return Response
      */
     public function store(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || ! auth()->user()->can('essentials.add_allowance_and_deduction')) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || !auth()->user()->can('essentials.add_allowance_and_deduction')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -121,19 +116,19 @@ class EssentialsAllowanceAndDeductionController extends Controller
             $input = $request->only(['description', 'type', 'amount', 'amount_type', 'applicable_date']);
             $input['business_id'] = $business_id;
             $input['amount'] = $this->moduleUtil->num_uf($input['amount']);
-            $input['applicable_date'] = ! empty($input['applicable_date']) ? $this->essentialsUtil->uf_date($input['applicable_date']) : null;
+            $input['applicable_date'] = !empty($input['applicable_date']) ? $this->essentialsUtil->uf_date($input['applicable_date']) : null;
             $allowance = EssentialsAllowanceAndDeduction::create($input);
             $allowance->employees()->sync($request->input('employees'));
 
             $output = ['success' => true,
-                'msg' => __('lang_v1.added_success'),
-            ];
+                        'msg' => __("lang_v1.added_success")
+                    ];
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
-
+            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            
             $output = ['success' => false,
-                'msg' => 'File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage(),
-            ];
+                        'msg' => "File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage()
+                    ];
         }
 
         return $output;
@@ -141,14 +136,13 @@ class EssentialsAllowanceAndDeductionController extends Controller
 
     /**
      * Show the specified resource.
-     *
      * @return Response
      */
     public function show()
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || ! auth()->user()->can('essentials.add_allowance_and_deduction')) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || !auth()->user()->can('essentials.add_allowance_and_deduction')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -157,14 +151,13 @@ class EssentialsAllowanceAndDeductionController extends Controller
 
     /**
      * Show the form for editing the specified resource.
-     *
      * @return Response
      */
     public function edit($id)
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || ! auth()->user()->can('essentials.add_allowance_and_deduction')) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || !auth()->user()->can('essentials.add_allowance_and_deduction')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -178,7 +171,7 @@ class EssentialsAllowanceAndDeductionController extends Controller
             $selected_users[] = $employee->id;
         }
 
-        $applicable_date = ! empty($allowance->applicable_date) ? $this->essentialsUtil->format_date($allowance->applicable_date) : null;
+        $applicable_date = !empty($allowance->applicable_date) ? $this->essentialsUtil->format_date($allowance->applicable_date) : null;
 
         return view('essentials::allowance_deduction.edit')
                 ->with(compact('allowance', 'users', 'selected_users', 'applicable_date'));
@@ -186,36 +179,35 @@ class EssentialsAllowanceAndDeductionController extends Controller
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  Request  $request
+     * @param  Request $request
      * @return Response
      */
     public function update(Request $request, $id)
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || ! auth()->user()->can('essentials.add_allowance_and_deduction')) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || !auth()->user()->can('essentials.add_allowance_and_deduction')) {
             abort(403, 'Unauthorized action.');
         }
 
         try {
             $input = $request->only(['description', 'type', 'amount', 'amount_type', 'applicable_date']);
             $input['amount'] = $this->moduleUtil->num_uf($input['amount']);
-            $input['applicable_date'] = ! empty($input['applicable_date']) ? $this->essentialsUtil->uf_date($input['applicable_date']) : null;
+            $input['applicable_date'] = !empty($input['applicable_date']) ? $this->essentialsUtil->uf_date($input['applicable_date']) : null;
             $allowance = EssentialsAllowanceAndDeduction::findOrFail($id);
             $allowance->update($input);
 
             $allowance->employees()->sync($request->input('employees'));
 
             $output = ['success' => true,
-                'msg' => __('lang_v1.updated_success'),
-            ];
+                        'msg' => __("lang_v1.updated_success")
+                    ];
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
-
+            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            
             $output = ['success' => false,
-                'msg' => 'File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage(),
-            ];
+                        'msg' => "File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage()
+                    ];
         }
 
         return $output;
@@ -223,14 +215,13 @@ class EssentialsAllowanceAndDeductionController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     *
      * @return Response
      */
     public function destroy($id)
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || ! auth()->user()->can('essentials.add_allowance_and_deduction')) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) || !auth()->user()->can('essentials.add_allowance_and_deduction')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -241,14 +232,14 @@ class EssentialsAllowanceAndDeductionController extends Controller
                             ->delete();
 
                 $output = ['success' => true,
-                    'msg' => __('lang_v1.deleted_success'),
-                ];
+                            'msg' => __("lang_v1.deleted_success")
+                        ];
             } catch (\Exception $e) {
-                \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
-
+                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            
                 $output = ['success' => false,
-                    'msg' => __('messages.something_went_wrong'),
-                ];
+                            'msg' => __("messages.something_went_wrong")
+                        ];
             }
 
             return $output;

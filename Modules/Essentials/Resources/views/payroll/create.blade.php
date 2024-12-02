@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
 @php
-    $action_url = action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'store']);
+    $action_url = action('\Modules\Essentials\Http\Controllers\PayrollController@store');
     $title = __( 'essentials::lang.add_payroll' );
     $subtitle = __( 'essentials::lang.add_payroll' );
     $submit_btn_text = __( 'messages.save' );
     $group_name = __('essentials::lang.payroll_for_month', ['date' => $month_name . ' ' . $year]);
     if ($action == 'edit') {
-        $action_url = action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'getUpdatePayrollGroup']);
+        $action_url = action('\Modules\Essentials\Http\Controllers\PayrollController@getUpdatePayrollGroup');
         $title = __( 'essentials::lang.edit_payroll' );
         $subtitle = __( 'essentials::lang.edit_payroll' );
         $submit_btn_text = __( 'messages.update' );
@@ -20,7 +20,7 @@
 @include('essentials::layouts.nav_hrm')
 <!-- Content Header (Page header) -->
 <section class="content-header">
-  <h1 class="tw-text-sm md:tw-text-base tw-text-gray-700 tw-font-semibold">{{$subtitle}}</h1>
+  <h1>{{$subtitle}}</h1>
 </section>
 
 <!-- Main content -->
@@ -243,16 +243,16 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-12 text-center">
-            <div class="form-group m-8 mt-15">
-                {!! Form::hidden('total_gross_amount', 0, ['id' => 'total_gross_amount']); !!}
+        <div class="col-md-12">
+            {!! Form::hidden('total_gross_amount', 0, ['id' => 'total_gross_amount']); !!}
+            <button type="submit" class="btn btn-primary pull-right m-8" id="submit_user_button">
+                {{$submit_btn_text}}
+            </button>
+            <div class="form-group pull-right m-8 mt-15">
                 <label>
                     {!! Form::checkbox('notify_employee', 1, 0 , 
                     [ 'class' => 'input-icheck']); !!} {{ __( 'essentials::lang.notify_employee' ) }}
                 </label>
-                <button type="submit" class="tw-dw-btn tw-dw-btn-primary tw-text-white tw-dw-btn-lg" id="submit_user_button">
-                    {{$submit_btn_text}}
-                </button>
             </div>
         </div>
     </div>

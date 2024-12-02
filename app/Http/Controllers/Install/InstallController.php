@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Install;
 
 use App\Http\Controllers\Controller;
-use App\Utils\InstallUtil;
-use Composer\Semver\Comparator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\DB;
 use Symfony\Component\Console\Output\BufferedOutput;
-use Illuminate\Support\Facades\Abort;
+
+use App\Utils\InstallUtil;
+use Illuminate\Support\Facades\DB;
+use Composer\Semver\Comparator;
 
 //use Illuminate\Support\Facades\Storage;
 
@@ -17,11 +17,10 @@ class InstallController extends Controller
 {
     /**
      * All Utils instance.
+     *
      */
     protected $outputLog;
-
     protected $appVersion;
-
     protected $macActivationKeyChecker;
 
     /**
@@ -36,8 +35,8 @@ class InstallController extends Controller
 
         //Check if mac based activation key is required or not.
         $this->macActivationKeyChecker = false;
-        if (file_exists(__DIR__.'/MacActivationKeyChecker.php')) {
-            include_once __DIR__.'/MacActivationKeyChecker.php';
+        if (file_exists(__DIR__ . '/MacActivationKeyChecker.php')) {
+            include_once(__DIR__ . '/MacActivationKeyChecker.php');
             $this->macActivationKeyChecker = $mac_is_enabled;
         }
 
@@ -46,6 +45,7 @@ class InstallController extends Controller
 
     /**
      * Initialize all install functions
+     *
      */
     private function installSettings()
     {
@@ -56,6 +56,7 @@ class InstallController extends Controller
 
     /**
      * Check if project is already installed then show 404 error
+     *
      */
     private function isInstalled()
     {
@@ -67,6 +68,7 @@ class InstallController extends Controller
 
     /**
      * This function deletes .env file.
+     *
      */
     private function deleteEnv()
     {
@@ -74,7 +76,6 @@ class InstallController extends Controller
         if ($envPath && file_exists($envPath)) {
             unlink($envPath);
         }
-
         return true;
     }
 
@@ -99,9 +100,9 @@ class InstallController extends Controller
         $this->installSettings();
 
         $output = [];
-
+        
         //Check for php version
-        $output['php'] = (PHP_MAJOR_VERSION >= 7 && PHP_MINOR_VERSION >= 1) ? true : false;
+        $output['php'] = (PHP_MAJOR_VERSION >= 7 && PHP_MINOR_VERSION >=1) ? true : false;
         $output['php_version'] = PHP_VERSION;
 
         //Check for php extensions
@@ -117,7 +118,7 @@ class InstallController extends Controller
         //Check for writable permission. storage and the bootstrap/cache directories should be writable by your web server
         $output['storage_writable'] = is_writable(storage_path());
         $output['cache_writable'] = is_writable(base_path('bootstrap/cache'));
-
+        
         $output['next'] = $output['php'] && $output['openssl'] && $output['pdo'] && $output['mbstring'] && $output['tokenizer'] && $output['xml'] && $output['curl'] && $output['zip'] && $output['gd'] && $output['storage_writable'] && $output['cache_writable'];
 
         return view('install.check-server')
@@ -132,8 +133,8 @@ class InstallController extends Controller
 
         //Check if .env.example is present or not.
         $env_example = base_path('.env.example');
-        if (! file_exists($env_example)) {
-            exit("<b>.env.example file not found in <code>$env_example</code></b> <br/><br/> - In the downloaded codebase you will find .env.example file, please upload it and refresh this page.");
+        if (!file_exists($env_example)) {
+            die("<b>.env.example file not found in <code>$env_example</code></b> <br/><br/> - In the downloaded codebase you will find .env.example file, please upload it and refresh this page.");
         }
 
         return view('install.details')
@@ -149,16 +150,16 @@ class InstallController extends Controller
         try {
             ini_set('max_execution_time', 0);
             ini_set('memory_limit', '512M');
-
+            
             $validatedData = $request->validate(
                 [
-                    'APP_NAME' => 'required',
-                    'ENVATO_PURCHASE_CODE' => 'required',
-                    'DB_DATABASE' => 'required',
-                    'DB_USERNAME' => 'required',
-                    'DB_PASSWORD' => 'required',
-                    'DB_HOST' => 'required',
-                    'DB_PORT' => 'required',
+                'APP_NAME' => 'required',
+                'ENVATO_PURCHASE_CODE' => 'required',
+                'DB_DATABASE' => 'required',
+                'DB_USERNAME' => 'required',
+                'DB_PASSWORD' => 'required',
+                'DB_HOST' => 'required',
+                'DB_PORT' => 'required'
                 ],
                 [
                     'APP_NAME.required' => 'App Name is required',
@@ -174,20 +175,19 @@ class InstallController extends Controller
             $this->outputLog = new BufferedOutput;
 
             $input = $request->only(['APP_NAME', 'APP_TITLE', 'DB_HOST', 'DB_PORT', 'DB_DATABASE', 'DB_USERNAME', 'DB_PASSWORD', 'ENVATO_PURCHASE_CODE',
-                'ENVATO_EMAIL', 'ENVATO_USERNAME', 'MAIL_MAILER',
+                'ENVATO_EMAIL', 'ENVATO_USERNAME', 'MAIL_DRIVER',
                 'MAIL_FROM_ADDRESS', 'MAIL_FROM_NAME', 'MAIL_HOST', 'MAIL_PORT', 'MAIL_ENCRYPTION',
-                'MAIL_USERNAME', 'MAIL_PASSWORD', ]);
+                'MAIL_USERNAME', 'MAIL_PASSWORD']);
 
-            $input['APP_DEBUG'] = 'false';
-            $input['APP_URL'] = url('/');
+            $input['APP_DEBUG'] = "false";
+            $input['APP_URL'] = url("/");
             $input['APP_ENV'] = 'live';
 
             //Check for database details
             $mysql_link = @mysqli_connect($input['DB_HOST'], $input['DB_USERNAME'], $input['DB_PASSWORD'], $input['DB_DATABASE'], $input['DB_PORT']);
             if (mysqli_connect_errno()) {
-                $msg = '<b>ERROR</b>: Failed to connect to MySQL: '.mysqli_connect_error();
+                $msg = "<b>ERROR</b>: Failed to connect to MySQL: " . mysqli_connect_error();
                 $msg .= "<br/>Provide correct details for 'Database Host', 'Database Port', 'Database Name', 'Database Username', 'Database Password'.";
-
                 return redirect()
                     ->back()
                     ->with('error', $msg);
@@ -195,7 +195,7 @@ class InstallController extends Controller
 
             //pos boot
             $return = pos_boot($input['APP_URL'], __DIR__, $input['ENVATO_PURCHASE_CODE'], $input['ENVATO_EMAIL'], $input['ENVATO_USERNAME']);
-            if (! empty($return)) {
+            if (!empty($return)) {
                 return $return;
             }
 
@@ -203,11 +203,11 @@ class InstallController extends Controller
             if ($this->macActivationKeyChecker) {
                 $licence_code = $request->get('MAC_LICENCE_CODE');
                 $licence_valid = mac_verify_licence_code($licence_code);
-                if (! $licence_valid) {
+                if (!$licence_valid) {
                     return redirect()->back()
                         ->with('error', 'Invalid Activation Licence Code!!')
                         ->withInput();
-                    exit('Invalid Purchase Code');
+                    die('Invalid Purchase Code');
                 }
 
                 $input['MAC_LICENCE_CODE'] = $licence_code;
@@ -222,11 +222,11 @@ class InstallController extends Controller
                 foreach ($env_lines as $key => $line) {
                     //Check if present then replace it.
                     if (strpos($line, $index) !== false) {
-                        $env_lines[$key] = $index.'="'.$value.'"'.PHP_EOL;
+                        $env_lines[$key] = $index . '="' . $value . '"' . PHP_EOL;
                     }
                 }
             }
-
+            
             //TODO: Remove false & automate the process of creating .env file.
             if (false) {
                 // $fp = fopen($envPath, 'w');
@@ -242,7 +242,6 @@ class InstallController extends Controller
 
                 //Show intermediate steps if not able to copy file.
                 $envContent = implode('', $env_lines);
-
                 return view('install.envText')
                     ->with(compact('envContent', 'envPath'));
             }
@@ -261,10 +260,10 @@ class InstallController extends Controller
         ini_set('memory_limit', '512M');
 
         $this->installSettings();
-
+        
         DB::statement('SET default_storage_engine=INNODB;');
-        Artisan::call('migrate:fresh', ['--force' => true]);
-        Artisan::call('db:seed', ['--force' => true]);
+        Artisan::call('migrate:fresh', ["--force"=> true]);
+        Artisan::call('db:seed');
         //Artisan::call('storage:link');
     }
 
@@ -275,13 +274,12 @@ class InstallController extends Controller
 
             //Check if no .env file than redirect back.
             $envPath = base_path('.env');
-            if (! file_exists($envPath)) {
+            if (!file_exists($envPath)) {
                 return redirect()->route('install.details')
-                    ->with('error', 'Looks like you haven\'t created the .env file '.$envPath);
+                    ->with('error', 'Looks like you haven\'t created the .env file ' . $envPath);
             }
 
             $this->runArtisanCommands();
-
             return redirect()->route('install.success');
         } catch (Exception $e) {
             $this->deleteEnv();
@@ -300,12 +298,11 @@ class InstallController extends Controller
     {
         $installUtil = new installUtil();
         $db_version = $installUtil->getSystemInfo('db_version');
-
+        
         if (Comparator::greaterThan($this->appVersion, $db_version)) {
             return view('install.update_confirmation');
         } else {
-            // abort(404);
-            exit("<b> Update already done to Version <code>".$db_version."</code></b>");
+            abort(404);
         }
     }
 
@@ -326,13 +323,13 @@ class InstallController extends Controller
 
             $input = $request->only(['ENVATO_PURCHASE_CODE', 'ENVATO_USERNAME', 'ENVATO_EMAIL']);
             $return = pos_boot(config('app.url'), __DIR__, $input['ENVATO_PURCHASE_CODE'], $input['ENVATO_EMAIL'], $input['ENVATO_USERNAME'], 1);
-            if (! empty($return)) {
+            if (!empty($return)) {
                 return $return;
             }
 
             //Static version value is passed for 1.2 version.
             if ($version == 1.2) {
-                exit('Update not supported. Kindly install again.');
+                die("Update not supported. Kindly install again.");
             } elseif (is_null($version)) {
                 $installUtil = new installUtil();
                 $db_version = $installUtil->getSystemInfo('db_version');
@@ -343,9 +340,8 @@ class InstallController extends Controller
                     ini_set('memory_limit', '512M');
                     $this->installSettings();
                     DB::statement('SET default_storage_engine=INNODB;');
-                    Artisan::call('migrate', ['--force' => true]);
+                    Artisan::call('migrate', ["--force"=> true]);
                     Artisan::call('module:publish');
-                    Artisan::call('passport:install', ['--force' => true]);
 
                     $installUtil->setSystemInfo('db_version', $this->appVersion);
                 } else {
@@ -355,16 +351,15 @@ class InstallController extends Controller
                 abort(404);
             }
 
-            @DB::commit();
-
+            DB::commit();
+            
             $output = ['success' => 1,
-                'msg' => 'Updated Succesfully to version '.$this->appVersion.' !!',
-            ];
-
+                        'msg' => 'Updated Succesfully to version ' . $this->appVersion . ' !!'
+                    ];
             return redirect('login')->with('status', $output);
         } catch (Exception $e) {
             DB::rollBack();
-            exit($e->getMessage());
+            die($e->getMessage());
         }
     }
 }

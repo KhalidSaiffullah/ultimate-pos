@@ -8,6 +8,8 @@
 
        {{-- Laravel Mix - CSS File --}}
        {{-- <link rel="stylesheet" href="{{ mix('css/woocommerce.css') }}"> --}}
+       <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
 
     </head>
     <body>

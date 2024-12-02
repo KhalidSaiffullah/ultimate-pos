@@ -14,13 +14,14 @@ class EssentialsHolidayController extends Controller
 {
     /**
      * All Utils instance.
+     *
      */
     protected $moduleUtil;
 
     /**
      * Constructor
      *
-     * @param  ModuleUtil  $moduleUtil
+     * @param ModuleUtil $moduleUtil
      * @return void
      */
     public function __construct(ModuleUtil $moduleUtil)
@@ -30,14 +31,13 @@ class EssentialsHolidayController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
      * @return Response
      */
     public function index()
     {
         $business_id = request()->session()->get('user.business_id');
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -52,7 +52,7 @@ class EssentialsHolidayController extends Controller
                             'bl.name as location',
                             'start_date',
                             'end_date',
-                            'note',
+                            'note'
                         ]);
 
             $permitted_locations = auth()->user()->permitted_locations();
@@ -63,13 +63,13 @@ class EssentialsHolidayController extends Controller
                 });
             }
 
-            if (! empty(request()->input('location_id'))) {
+            if (!empty(request()->input('location_id'))) {
                 $holidays->where('essentials_holidays.location_id', request()->input('location_id'));
             }
 
-            if (! empty(request()->start_date) && ! empty(request()->end_date)) {
+            if (!empty(request()->start_date) && !empty(request()->end_date)) {
                 $start = request()->start_date;
-                $end = request()->end_date;
+                $end =  request()->end_date;
                 $holidays->whereDate('essentials_holidays.start_date', '>=', $start)
                             ->whereDate('essentials_holidays.start_date', '<=', $end);
             }
@@ -80,9 +80,9 @@ class EssentialsHolidayController extends Controller
                     function ($row) use ($is_admin) {
                         $html = '';
                         if ($is_admin) {
-                            $html .= '<button class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary btn-modal" data-container="#add_holiday_modal" data-href="'.action([\Modules\Essentials\Http\Controllers\EssentialsHolidayController::class, 'edit'], [$row->id]).'"><i class="fa fa-edit"></i> '.__('messages.edit').'</button>
+                            $html .= '<button class="btn btn-xs btn-primary btn-modal" data-container="#add_holiday_modal" data-href="' . action('\Modules\Essentials\Http\Controllers\EssentialsHolidayController@edit', [$row->id]) . '"><i class="fa fa-edit"></i> ' . __("messages.edit") . '</button>
                             &nbsp;
-                            <button class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-xs tw-dw-btn-error delete-holiday" data-href="'.action([\Modules\Essentials\Http\Controllers\EssentialsHolidayController::class, 'destroy'], [$row->id]).'"><i class="fa fa-trash"></i> '.__('messages.delete').'</button>
+                            <button class="btn btn-xs btn-danger delete-holiday" data-href="' . action('\Modules\Essentials\Http\Controllers\EssentialsHolidayController@destroy', [$row->id]) . '"><i class="fa fa-trash"></i> ' . __("messages.delete") . '</button>
                             ';
                         }
 
@@ -98,8 +98,7 @@ class EssentialsHolidayController extends Controller
                     $diff += 1;
                     $start_date_formated = $this->moduleUtil->format_date($start_date);
                     $end_date_formated = $this->moduleUtil->format_date($end_date);
-
-                    return $start_date_formated.' - '.$end_date_formated.' ('.$diff.\Str::plural(__('lang_v1.day'), $diff).')';
+                    return $start_date_formated . ' - ' . $end_date_formated . ' (' . $diff . \Str::plural(__('lang_v1.day'), $diff).')';
                 })
                 ->removeColumn('id')
                 ->rawColumns(['action'])
@@ -113,7 +112,6 @@ class EssentialsHolidayController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
      * @return Response
      */
     public function create()
@@ -121,7 +119,7 @@ class EssentialsHolidayController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -132,8 +130,7 @@ class EssentialsHolidayController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  Request  $request
+     * @param  Request $request
      * @return Response
      */
     public function store(Request $request)
@@ -141,7 +138,7 @@ class EssentialsHolidayController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -154,14 +151,14 @@ class EssentialsHolidayController extends Controller
 
             EssentialsHoliday::create($input);
             $output = ['success' => true,
-                'msg' => __('lang_v1.added_success'),
-            ];
+                            'msg' => __("lang_v1.added_success")
+                        ];
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
-
+            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            
             $output = ['success' => false,
-                'msg' => __('messages.something_went_wrong'),
-            ];
+                            'msg' => __("messages.something_went_wrong")
+                        ];
         }
 
         return $output;
@@ -169,7 +166,6 @@ class EssentialsHolidayController extends Controller
 
     /**
      * Show the specified resource.
-     *
      * @return Response
      */
     public function show()
@@ -179,7 +175,6 @@ class EssentialsHolidayController extends Controller
 
     /**
      * Show the form for editing the specified resource.
-     *
      * @return Response
      */
     public function edit($id)
@@ -187,7 +182,7 @@ class EssentialsHolidayController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -201,8 +196,7 @@ class EssentialsHolidayController extends Controller
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  Request  $request
+     * @param  Request $request
      * @return Response
      */
     public function update(Request $request, $id)
@@ -210,7 +204,7 @@ class EssentialsHolidayController extends Controller
         $business_id = $request->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -225,14 +219,14 @@ class EssentialsHolidayController extends Controller
                         ->update($input);
 
             $output = ['success' => true,
-                'msg' => __('lang_v1.updated_success'),
-            ];
+                            'msg' => __("lang_v1.updated_success")
+                        ];
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
-
+            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            
             $output = ['success' => false,
-                'msg' => __('messages.something_went_wrong'),
-            ];
+                            'msg' => __("messages.something_went_wrong")
+                        ];
         }
 
         return $output;
@@ -240,7 +234,6 @@ class EssentialsHolidayController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     *
      * @return Response
      */
     public function destroy($id)
@@ -248,7 +241,7 @@ class EssentialsHolidayController extends Controller
         $business_id = request()->session()->get('user.business_id');
         $is_admin = $this->moduleUtil->is_admin(auth()->user(), $business_id);
 
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && ! $is_admin) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module')) && !$is_admin) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -258,14 +251,14 @@ class EssentialsHolidayController extends Controller
                         ->delete();
 
             $output = ['success' => true,
-                'msg' => __('lang_v1.deleted_success'),
-            ];
+                            'msg' => __("lang_v1.deleted_success")
+                        ];
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
-
+            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            
             $output = ['success' => false,
-                'msg' => __('messages.something_went_wrong'),
-            ];
+                            'msg' => __("messages.something_went_wrong")
+                        ];
         }
 
         return $output;

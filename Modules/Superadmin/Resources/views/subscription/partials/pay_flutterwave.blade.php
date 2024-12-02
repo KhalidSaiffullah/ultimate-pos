@@ -24,17 +24,16 @@
     function makePayment() {
         FlutterwaveCheckout({
             public_key: "{{env('FLUTTERWAVE_PUBLIC_KEY')}}",
-            tx_ref: "{{Str::random(15)}}", //generate randomly
+            tx_ref: "{{str_random(15)}}", //generate randomly
             amount: {{$package->price}},
             currency: "{{$currency_code}}",
             payment_options: "card, mobilemoneyghana, ussd",
-            redirect_url: "{{action([\Modules\Superadmin\Http\Controllers\SubscriptionController::class, 'postFlutterwavePaymentCallback'])}}",// specified redirect URL
+            redirect_url: "{{action('\Modules\Superadmin\Http\Controllers\SubscriptionController@postFlutterwavePaymentCallback')}}",// specified redirect URL
             meta: {
                 package_id: "{{$package->id}}",
                 gateway: "{{$v}}",
                 business_id: "{{$user['business_id']}}",
-                user_id: "{{$user['id']}}",
-                coupon_code: "{{ request()->get('code') ?? null}}",
+                user_id: "{{$user['id']}}"
             },
             customer: {
                 email: "{{$user['email']}}"

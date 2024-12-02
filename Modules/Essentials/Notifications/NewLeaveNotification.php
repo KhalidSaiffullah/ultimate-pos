@@ -3,8 +3,8 @@
 namespace Modules\Essentials\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 
 class NewLeaveNotification extends Notification
 {
@@ -25,7 +25,7 @@ class NewLeaveNotification extends Notification
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -34,14 +34,14 @@ class NewLeaveNotification extends Notification
         if (isPusherEnabled()) {
             $channels[] = 'broadcast';
         }
-
+        
         return $channels;
     }
 
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -51,14 +51,14 @@ class NewLeaveNotification extends Notification
     /**
      * Get the array representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return array
      */
     public function toArray($notifiable)
     {
         return [
-            'applied_by' => $this->leave->user_id,
-            'ref_no' => $this->leave->ref_no,
+            "applied_by" => $this->leave->user_id,
+            "ref_no" => $this->leave->ref_no,
         ];
     }
 
@@ -72,8 +72,8 @@ class NewLeaveNotification extends Notification
     {
         return new BroadcastMessage([
             'title' => __('essentials::lang.leave_added_successfully'),
-            'body' => strip_tags(__('essentials::lang.new_leave_notification', ['employee' => $this->leave->user->user_full_name, 'ref_no' => $this->leave->ref_no])),
-            'link' => action([\Modules\Essentials\Http\Controllers\EssentialsLeaveController::class, 'index']),
+            'body' => strip_tags( __('essentials::lang.new_leave_notification', ['employee' => $this->leave->user->user_full_name, 'ref_no' => $this->leave->ref_no]) ),
+            'link' => action('\Modules\Essentials\Http\Controllers\EssentialsLeaveController@index')
         ]);
     }
 }

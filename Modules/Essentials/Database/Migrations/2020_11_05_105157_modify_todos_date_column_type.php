@@ -12,8 +12,8 @@ class ModifyTodosDateColumnType extends Migration
      */
     public function up()
     {
-        DB::statement('ALTER TABLE essentials_to_dos MODIFY COLUMN `date` DATETIME');
-        DB::statement('ALTER TABLE essentials_to_dos MODIFY COLUMN `end_date` DATETIME');
+        DB::statement("ALTER TABLE essentials_to_dos MODIFY COLUMN `date` DATETIME");
+        DB::statement("ALTER TABLE essentials_to_dos MODIFY COLUMN `end_date` DATETIME");
     }
 
     /**

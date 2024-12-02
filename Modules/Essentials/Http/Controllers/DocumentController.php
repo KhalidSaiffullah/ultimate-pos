@@ -10,7 +10,9 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Storage;
 use Modules\Essentials\Entities\Document;
+
 use Modules\Essentials\Entities\DocumentShare;
+
 use Yajra\DataTables\Facades\DataTables;
 
 class DocumentController extends Controller
@@ -20,7 +22,7 @@ class DocumentController extends Controller
     /**
      * Constructor
      *
-     * @param  ModuleUtil  $moduleUtil
+     * @param ModuleUtil $moduleUtil
      * @return void
      */
     public function __construct(ModuleUtil $moduleUtil)
@@ -30,18 +32,17 @@ class DocumentController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
      * @return Response
      */
     public function index(Request $request)
     {
         $business_id = $request->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
 
         $type = $request->get('type');
-
+        
         if (request()->ajax()) {
             $user_id = $request->session()->get('user.id');
             $role_id = User::find($user_id)->roles()->first()->id;
@@ -62,7 +63,7 @@ class DocumentController extends Controller
                 })
                 ->select('users.first_name', 'users.last_name', 'essentials_documents.type', 'essentials_documents.user_id', 'essentials_documents.name', 'essentials_documents.description', 'essentials_documents.created_at', 'essentials_documents.id')
                 ->groupBy('essentials_documents.id');
-
+            
             return DataTables::of($documents)
                 ->addColumn(
                     'action',
@@ -71,23 +72,23 @@ class DocumentController extends Controller
                     @endphp
 
                     @if($session_userid == $user_id)
-                    <button data-href ="{{action(\'\Modules\Essentials\Http\Controllers\DocumentController@destroy\',[$id])}}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-error delete_doc">
+                    <button data-href ="{{action(\'\Modules\Essentials\Http\Controllers\DocumentController@destroy\',[$id])}}" class="btn btn-danger btn-xs delete_doc">
                      <i class="fa fa-trash"></i>
                      @lang( "essentials::lang.delete")
                     </button>
 
-                    <button data-href ="{{action(\'\Modules\Essentials\Http\Controllers\DocumentShareController@edit\',[$id])}}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-accent share_doc">
+                    <button data-href ="{{action(\'\Modules\Essentials\Http\Controllers\DocumentShareController@edit\',[$id])}}" class="btn btn-success btn-xs share_doc">
                          <i class="fa fa-share"></i>
                          @lang( "essentials::lang.share")
                     </button>
                     @endif
                     @if($type == "document")
-                        <a href ="{{action(\'\Modules\Essentials\Http\Controllers\DocumentController@download\',[$id])}}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-info download">
+                        <a href ="{{action(\'\Modules\Essentials\Http\Controllers\DocumentController@download\',[$id])}}" class="btn btn-info btn-xs download">
                              <i class="fa fa-download"></i>
                              @lang( "essentials::lang.download")
                         </a>
                     @elseif($type == "memos")
-                            <button data-href ="{{action(\'\Modules\Essentials\Http\Controllers\DocumentController@show\',[$id])}}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-primary view_memos">
+                            <button data-href ="{{action(\'\Modules\Essentials\Http\Controllers\DocumentController@show\',[$id])}}" class="btn btn-primary btn-xs view_memos">
                                 <i class="fa fa-eye"></i>
                                 @lang("essentials::lang.view")
                             </button>
@@ -143,8 +144,8 @@ class DocumentController extends Controller
                 ->rawColumns(['name', 'created_at', 'action'])
                 ->make(true);
         }
-
-        if (! empty($type)) {
+        
+        if (!empty($type)) {
             return view('essentials::memos.index');
         } elseif (empty($type)) {
             return view('essentials::document.index');
@@ -153,66 +154,65 @@ class DocumentController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  Request  $request
+     * @param  Request $request
      * @return Response
      */
     public function store(Request $request)
     {
         $business_id = $request->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
-
+        
         try {
             $user_id = $request->session()->get('user.id');
             $document = $request->only(['name', 'description']);
 
-            if (is_string($document['name'])) {
-                $type = 'memos';
+            if (is_string($document["name"])) {
+                $type = "memos";
             } else {
-                $type = 'document';
+                $type = "document";
             }
-
-            if ($type == 'document') {
+            
+            if ($type == "document") {
                 $name = $this->moduleUtil->uploadFile($request, 'name', 'documents');
-                $type = 'document';
-            } elseif ($type == 'memos') {
-                $type = 'memos';
+                $type = "document";
+            } elseif ($type == "memos") {
+                $type = "memos";
                 $name = $document['name'];
             }
 
             $doc = [
-                'business_id' => $business_id,
-                'user_id' => $user_id,
-                'type' => $type,
-                'name' => $name,
-                'description' => $document['description'],
-            ];
+                    'business_id' => $business_id,
+                    'user_id' => $user_id,
+                    'type' => $type,
+                    'name' => $name,
+                    'description' => $document['description'],
+                    ];
 
             Document::create($doc);
 
             $output = [
-                'success' => true,
-                'msg' => __('lang_v1.success'),
-            ];
+                        'success' => true,
+                        'msg' => __('lang_v1.success')
+                        ];
 
-            if ($type == 'document') {
+            if ($type == "document") {
                 return redirect()
-                ->action([\Modules\Essentials\Http\Controllers\DocumentController::class, 'index'])
+                ->action('\Modules\Essentials\Http\Controllers\DocumentController@index')
                 ->with('status', $output);
             } else {
                 return redirect()
-                ->action([\Modules\Essentials\Http\Controllers\DocumentController::class, 'index'], ['type' => 'memos'])
+                ->action('\Modules\Essentials\Http\Controllers\DocumentController@index', ['type' => 'memos'])
                 ->with('status', $output);
             }
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
 
             $output = [
-                'success' => false,
-                'msg' => __('messages.something_went_wrong'),
-            ];
+                        'success' => false,
+                        'msg' => __('messages.something_went_wrong')
+                        ];
 
             return back()->with('status', $output);
         }
@@ -220,13 +220,12 @@ class DocumentController extends Controller
 
     /**
      * Show the specified resource.
-     *
      * @return Response
      */
     public function show($id)
     {
         $business_id = request()->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -241,7 +240,6 @@ class DocumentController extends Controller
 
     /**
      * Show the form for editing the specified resource.
-     *
      * @return Response
      */
     public function edit()
@@ -251,8 +249,7 @@ class DocumentController extends Controller
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  Request  $request
+     * @param  Request $request
      * @return Response
      */
     public function update(Request $request)
@@ -261,13 +258,12 @@ class DocumentController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     *
      * @return Response
      */
     public function destroy(Request $request, $id)
     {
         $business_id = $request->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -277,13 +273,13 @@ class DocumentController extends Controller
 
                 $document = Document::where('business_id', $business_id)
                                     ->find($id);
-
+                
                 $document_user_id = $document->user_id;
 
                 if ($user_id == $document_user_id) {
-                    if ($document['type'] == 'document') {
+                    if ($document['type'] == "document") {
                         $file_name = $document->name;
-                        $path = 'documents/'.$file_name;
+                        $path = "documents/" . $file_name;
                         //delete file from a disk
                         Storage::delete($path);
                     }
@@ -293,18 +289,18 @@ class DocumentController extends Controller
                 }
 
                 $output = [
-                    'success' => true,
-                    'msg' => __('lang_v1.success'),
-                ];
+                        'success' => true,
+                        'msg' => __('lang_v1.success')
+                    ];
 
                 return $output;
             } catch (\Exception $e) {
-                \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+                \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
 
                 $output = [
-                    'success' => false,
-                    'msg' => __('messages.something_went_wrong'),
-                ];
+                            'success' => false,
+                            'msg' => __('messages.something_went_wrong')
+                            ];
 
                 return back()->with('status', $output);
             }
@@ -313,20 +309,19 @@ class DocumentController extends Controller
 
     /**
      * Download a document
-     *
      * @return Response
      */
     public function download(Request $request, $id)
-    {
+    {   
         $business_id = $request->session()->get('user.business_id');
-        if (! (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
+        if (!(auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'essentials_module'))) {
             abort(403, 'Unauthorized action.');
         }
 
         try {
             $user_id = $request->session()->get('user.id');
             $role_id = User::find($user_id)->roles()->first()->id;
-
+            
             $document = Document::where('business_id', $business_id)
                                 ->find($id);
             $creator = $document->user_id;
@@ -341,23 +336,23 @@ class DocumentController extends Controller
                     ->where('essentials_document_shares.value_type', '=', 'role');
                 })
                 ->first();
-
+            
             $name = $document->name;
             $file = explode('_', $name, 2);
             $file_name = $file['1'];
 
-            $path = 'documents/'.$name;
+            $path = "documents/" . $name;
 
             if ($user_id == $creator || $role_id == $document_shares['value'] || $user_id == $document_shares['value']) {
                 return Storage::download($path, $file_name);
             }
         } catch (\Exception $e) {
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
 
             $output = [
-                'success' => false,
-                'msg' => __('messages.something_went_wrong'),
-            ];
+                        'success' => false,
+                        'msg' => __('messages.something_went_wrong')
+                        ];
 
             return back()->with('status', $output);
         }

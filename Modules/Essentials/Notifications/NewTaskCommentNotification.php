@@ -3,9 +3,10 @@
 namespace Modules\Essentials\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Messages\BroadcastMessage;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 
 class NewTaskCommentNotification extends Notification
 {
@@ -26,7 +27,7 @@ class NewTaskCommentNotification extends Notification
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -35,14 +36,14 @@ class NewTaskCommentNotification extends Notification
         if (isPusherEnabled()) {
             $channels[] = 'broadcast';
         }
-
+        
         return $channels;
     }
 
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -56,13 +57,13 @@ class NewTaskCommentNotification extends Notification
     /**
      * Get the array representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return array
      */
     public function toArray($notifiable)
     {
         return [
-            'comment_id' => $this->comment->id,
+            "comment_id" => $this->comment->id,
         ];
     }
 
@@ -76,8 +77,8 @@ class NewTaskCommentNotification extends Notification
     {
         return new BroadcastMessage([
             'title' => __('essentials::lang.new_comment'),
-            'body' => strip_tags(__('essentials::lang.new_task_comment_notification', ['added_by' => $this->comment->added_by->user_full_name, 'task_id' => $this->comment->task->task_id])),
-            'link' => action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'show'], $this->comment->task->id),
+            'body' => strip_tags(__('essentials::lang.new_task_comment_notification', ['added_by' => $this->comment->added_by->user_full_name, 'task_id' => $this->comment->task->task_id]) ),
+            'link' => action('\Modules\Essentials\Http\Controllers\ToDoController@show', $this->comment->task->id)
         ]);
     }
 }

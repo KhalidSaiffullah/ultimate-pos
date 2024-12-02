@@ -4,7 +4,7 @@
 @section('content')
 @include('essentials::layouts.nav_hrm')
 <section class="content-header">
-    <h1 class="tw-text-xl md:tw-text-3xl tw-font-bold tw-text-black" >@lang('essentials::lang.sales_target')
+    <h1>@lang('essentials::lang.sales_target')
     </h1>
 </section>
 <!-- Main content -->
@@ -39,7 +39,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    "url": "{{action([\Modules\Essentials\Http\Controllers\SalesTargetController::class, 'index'])}}"
+                    "url": "{{action('\Modules\Essentials\Http\Controllers\SalesTargetController@index')}}"
                 },
                 columns: [
                     { data: 'full_name', name: 'full_name' },

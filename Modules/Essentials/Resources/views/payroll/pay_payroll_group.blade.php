@@ -3,15 +3,15 @@
 @section('content')
 @include('essentials::layouts.nav_hrm')
 <section class="content-header">
-	<h1 class="tw-text-sm md:tw-text-base tw-text-gray-700 tw-font-semibold">
+	<h1>
     	@lang('essentials::lang.add_payment_for_payroll_group')
-    	<small class="tw-text-sm md:tw-text-base tw-text-gray-700 tw-font-semibold"><code>({{$payroll_group->name}})</code></small>
+    	<small><code>({{$payroll_group->name}})</code></small>
     </h1>
 </section>
 <!-- Main content -->
 <section class="content">
 	<div class="row">
-		{!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'postAddPayment']), 'method' => 'post', 'id' => 'payroll_group_payment' ]) !!}
+		{!! Form::open(['url' => action('\Modules\Essentials\Http\Controllers\PayrollController@postAddPayment'), 'method' => 'post', 'id' => 'payroll_group_payment' ]) !!}
 		{!! Form::hidden('payroll_group_id', $payroll_group->id); !!}
 		<div class="col-md-12">
 			<div class="box box-solid" id="payroll-group">
@@ -50,7 +50,6 @@
                                 <th>@lang( 'essentials::lang.employee' )</th>
                                 <th>@lang( 'essentials::lang.gross_amount' )</th>
                                 <th>@lang('lang_v1.bank_details')</th>
-									<th>@lang('sale.payments')</th>
                                 <th>
                                 	@lang('purchase.add_payment')
                                 </th>
@@ -59,6 +58,7 @@
 	                        	<tr data-id="{{$id}}">
 	                        		<input type="hidden" name="payments[{{$id}}][transaction_id]" value="{{$payroll['transaction_id']}}">
                         			<input type="hidden" name="payments[{{$id}}][employee_id]" value="{{$payroll['employee_id']}}">
+                        			<input type="hidden" name="payments[{{$id}}][final_total]" value="{{$payroll['final_total']}}">
 	                        		<td>
 	                        			{{$payroll['employee']}}
 	                        		</td>
@@ -89,15 +89,6 @@
 				      					{{$payroll['bank_details']['tax_payer_id'] ?? ''}}
 				      					<br>
 	                        		</td>
-									<td>
-										@foreach($payroll['payments'] as $payment)
-											<strong>@lang('messages.date'): </strong> {{ @format_datetime($payment->paid_on) }} <br>
-											<strong>@lang('purchase.amount'): </strong> <span class="display_currency" data-currency_symbol="true">{{ $payment->amount }}</span> <br>
-											<strong>@lang('purchase.payment_method'): </strong>  {{ $payment->method ?? '' }} <br>
-											<strong>@lang('lang_v1.payment_note'): </strong>  {{ $payment->note ?? '' }}
-											<hr>
-										@endforeach
-									</td>
 	                        		<td>
 	                        			@if($payroll['payment_status'] == 'paid')
 	                        				<span class="label bg-light-green">
@@ -112,12 +103,10 @@
 	                        @endforeach
 	                    </table>
 	                </div>
-					<div class="col-md-12 text-center">
-						<button type="submit" class="btn btn-primary m-8 btn-big" id="submit_user_button">
-							{{__( 'lang_v1.pay' )}}
-						</button>
-					</div>
             	</div>
+            	<button type="submit" class="btn btn-primary pull-right m-8" id="submit_user_button">
+	                {{__( 'lang_v1.pay' )}}
+	            </button>
             </div>
 		</div>
 		{!! Form::close() !!}
@@ -126,11 +115,6 @@
 @endsection
 @section('javascript')
 <script type="text/javascript">
-
-	$(document).ready(function() {
-		$("form#payroll_group_payment").validate();
-	});
-
 	$(function () {
 		$('.paid_on').datetimepicker({
             format: moment_date_format + ' ' + moment_time_format,

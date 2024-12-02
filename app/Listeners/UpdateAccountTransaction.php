@@ -2,7 +2,11 @@
 
 namespace App\Listeners;
 
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Contracts\Queue\ShouldQueue;
+
 use App\AccountTransaction;
+
 use App\Utils\ModuleUtil;
 
 class UpdateAccountTransaction
@@ -27,7 +31,7 @@ class UpdateAccountTransaction
      */
     public function handle($event)
     {
-        if (! $this->moduleUtil->isModuleEnabled('account')) {
+        if(!$this->moduleUtil->isModuleEnabled('account')){
             return true;
         }
 

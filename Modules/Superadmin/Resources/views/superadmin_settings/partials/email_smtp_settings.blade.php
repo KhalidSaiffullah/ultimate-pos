@@ -2,8 +2,8 @@
     <div class="row">
     	<div class="col-xs-4">
             <div class="form-group">
-            	{!! Form::label('MAIL_MAILER', __('superadmin::lang.mail_driver') . ':') !!}
-            	{!! Form::select('MAIL_MAILER', $mail_drivers, $default_values['MAIL_MAILER'], ['class' => 'form-control']); !!}
+            	{!! Form::label('MAIL_DRIVER', __('superadmin::lang.mail_driver') . ':') !!}
+            	{!! Form::select('MAIL_DRIVER', $mail_drivers, $default_values['MAIL_DRIVER'], ['class' => 'form-control']); !!}
             </div>
         </div>
         <div class="col-xs-4">

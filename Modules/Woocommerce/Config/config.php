@@ -2,6 +2,5 @@
 
 return [
     'name' => 'Woocommerce',
-    'module_version' => '5.1',
-    'pid' => 22
+    'module_version' => "3.0"
 ];

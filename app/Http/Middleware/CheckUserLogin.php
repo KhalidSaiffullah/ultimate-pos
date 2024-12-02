@@ -15,7 +15,7 @@ class CheckUserLogin
      */
     public function handle($request, Closure $next)
     {
-        if (($request->user()->user_type != 'user' || $request->user()->allow_login != 1) && request()->segment(1) != 'home') {
+        if ($request->user()->user_type != 'user' || $request->user()->allow_login != 1) {
             abort(403, 'Unauthorized action.');
         }
 

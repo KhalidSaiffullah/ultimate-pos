@@ -3,9 +3,10 @@
 namespace Modules\Essentials\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Messages\BroadcastMessage;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 
 class NewTaskDocumentNotification extends Notification
 {
@@ -26,7 +27,7 @@ class NewTaskDocumentNotification extends Notification
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -35,14 +36,14 @@ class NewTaskDocumentNotification extends Notification
         if (isPusherEnabled()) {
             $channels[] = 'broadcast';
         }
-
+        
         return $channels;
     }
 
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -56,15 +57,15 @@ class NewTaskDocumentNotification extends Notification
     /**
      * Get the array representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return array
      */
     public function toArray($notifiable)
     {
         return [
-            'task_id' => $this->document['task_id'],
-            'uploaded_by' => $this->document['uploaded_by'],
-            'id' => $this->document['id'],
+            "task_id" => $this->document['task_id'],
+            "uploaded_by" => $this->document['uploaded_by'],
+            "id" => $this->document['id']
         ];
     }
 
@@ -78,8 +79,8 @@ class NewTaskDocumentNotification extends Notification
     {
         return new BroadcastMessage([
             'title' => __('essentials::lang.new_document'),
-            'body' => strip_tags(__('essentials::lang.new_task_document_notification', ['uploaded_by' => $this->document['uploaded_by_user_name'], 'task_id' => $this->document['task_id']])),
-            'link' => action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'show'], $this->document['id']),
+            'body' => strip_tags( __('essentials::lang.new_task_document_notification', ['uploaded_by' => $this->document['uploaded_by_user_name'], 'task_id' => $this->document['task_id']]) ),
+            'link' => action('\Modules\Essentials\Http\Controllers\ToDoController@show', $this->document['id'])
         ]);
     }
 }

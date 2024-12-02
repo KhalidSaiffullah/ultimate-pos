@@ -4,7 +4,7 @@
 @section('content')
 @include('essentials::layouts.nav_hrm')
 <section class="content-header">
-    <h1 class="tw-text-xl md:tw-text-3xl tw-font-bold tw-text-black">@lang('essentials::lang.holiday')
+    <h1>@lang('essentials::lang.holiday')
     </h1>
 </section>
 <!-- Main content -->
@@ -34,16 +34,8 @@
                 @if($is_admin)
                 @slot('tool')
                     <div class="box-tools">
-                        <button type="button" class="tw-dw-btn tw-bg-gradient-to-r tw-from-indigo-600 tw-to-blue-500 tw-font-bold tw-text-white tw-border-none tw-rounded-full pull-right btn-modal"
-                            data-href="{{action([\Modules\Essentials\Http\Controllers\EssentialsHolidayController::class, 'create'])}}" data-container="#add_holiday_modal">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                class="icon icon-tabler icons-tabler-outline icon-tabler-plus">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                <path d="M12 5l0 14" />
-                                <path d="M5 12l14 0" />
-                            </svg> @lang( 'messages.add' )
-                        </button>
+                        <button type="button" class="btn btn-block btn-primary btn-modal" data-href="{{action('\Modules\Essentials\Http\Controllers\EssentialsHolidayController@create')}}" data-container="#add_holiday_modal">
+                            <i class="fa fa-plus"></i> @lang( 'messages.add' )</button>
                     </div>
                 @endslot
                 @endif
@@ -79,7 +71,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    "url": "{{action([\Modules\Essentials\Http\Controllers\EssentialsHolidayController::class, 'index'])}}",
+                    "url": "{{action('\Modules\Essentials\Http\Controllers\EssentialsHolidayController@index')}}",
                     "data" : function(d) {
                         d.location_id = $('#location_id').val();
                         if($('#holiday_filter_date_range').val()) {

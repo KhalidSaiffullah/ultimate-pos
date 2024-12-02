@@ -21,7 +21,7 @@
 							<strong>{{__('essentials::lang.estimated_hours')}}: </strong> {{$todo->estimated_hours}}
 						</div>
 						<div class="col-md-4">
-							<strong>{{__('essentials::lang.assigned_by')}}: </strong> {{$todo->assigned_by?->user_full_name}}<br>
+							<strong>{{__('essentials::lang.assigned_by')}}: </strong> {{optional($todo->assigned_by)->user_full_name}}<br>
 							<strong>{{__('essentials::lang.assigned_to')}}: </strong> {{implode(', ', $users)}}
 						</div>
 						<div class="col-md-4">
@@ -58,7 +58,7 @@
 			    <div class="tab-content">
 			    	<div class="tab-pane active" id="comments_tab">
 			    		<div class="row">
-							{!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'addComment']), 'id' => 'task_comment_form', 'method' => 'post']) !!}
+							{!! Form::open(['url' => action('\Modules\Essentials\Http\Controllers\ToDoController@addComment'), 'id' => 'task_comment_form', 'method' => 'post']) !!}
 							<div class="col-md-6">
 								<div class="form-group">
 									{!! Form::label('comment', __('essentials::lang.add_comment') . ':') !!}
@@ -67,7 +67,7 @@
 								</div>
 							</div>
 							<div class="col-md-12">
-								<button type="submit" class="tw-dw-btn tw-dw-btn-primary tw-text-white pull-right ladda-button add-comment-btn" data-style="expand-right">
+								<button type="submit" class="btn btn-primary pull-right ladda-button add-comment-btn" data-style="expand-right">
 									<span class="ladda-label">
 										@lang('messages.add')
 									</span>
@@ -88,7 +88,7 @@
 
 			    	<div class="tab-pane" id="documents_tab">
 			    		<div class="row">
-							{!! Form::open(['url' => action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'uploadDocument']), 'id' => 'task_upload_doc_form', 'method' => 'post', 'files' => true]) !!}
+							{!! Form::open(['url' => action('\Modules\Essentials\Http\Controllers\ToDoController@uploadDocument'), 'id' => 'task_upload_doc_form', 'method' => 'post', 'files' => true]) !!}
 							<div class="col-md-12">
 								<div class="form-group">
 									{!! Form::label('documents', __('lang_v1.upload_documents') . ':') !!}
@@ -103,7 +103,7 @@
 								</div>
 							</div>
 							<div class="col-md-12">
-								<button type="submit" class="tw-dw-btn tw-dw-btn-primary tw-text-white pull-right">@lang('essentials::lang.upload')</button>
+								<button type="submit" class="btn btn-primary pull-right">@lang('essentials::lang.upload')</button>
 							</div>
 							{!! Form::close() !!}
 							<div class="col-md-12">
@@ -123,10 +123,10 @@
 												<td>{{$media->display_name}}</td>
 												<td>{{$media->description}}</td>
 												<td>{{$media->uploaded_by_user->user_full_name ?? ''}}</td>
-												<td><a href="{{$media->display_url}}" download class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-accent">@lang('lang_v1.download')</a>
+												<td><a href="{{$media->display_url}}" download class="btn btn-success btn-xs">@lang('lang_v1.download')</a>
 
 												@if(in_array(auth()->user()->id, [$media->uploaded_by, $todo->created_by]))
-													<a href="{{action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'deleteDocument'], $media->id)}}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-error delete-document" data-media_id="{{$media->id}}"><i class="fa fa-trash"></i> @lang('messages.delete')</a>
+													<a href="{{action('\Modules\Essentials\Http\Controllers\ToDoController@deleteDocument', $media->id)}}" class="btn btn-danger btn-xs delete-document" data-media_id="{{$media->id}}"><i class="fa fa-trash"></i> @lang('messages.delete')</a>
 												@endif
 												</td>
 											</tr>

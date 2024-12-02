@@ -4,7 +4,7 @@
 @section('content')
 @include('essentials::layouts.nav_hrm')
 <section class="content-header">
-    <h1 class="tw-text-xl md:tw-text-3xl tw-font-bold tw-text-black">@lang('essentials::lang.payroll')
+    <h1>@lang('essentials::lang.payroll')
     </h1>
 </section>
 <!-- Main content -->
@@ -83,15 +83,9 @@
                         <div class="row">
                             @can('essentials.create_payroll')
                                 <div class="col-md-12">
-                                    <button type="button" class="tw-dw-btn tw-bg-gradient-to-r tw-from-indigo-600 tw-to-blue-500 tw-font-bold tw-text-white tw-border-none tw-rounded-full pull-right"
-                                        data-toggle="modal" data-target="#payroll_modal">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                            class="icon icon-tabler icons-tabler-outline icon-tabler-plus">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                            <path d="M12 5l0 14" />
-                                            <path d="M5 12l14 0" />
-                                        </svg> @lang( 'messages.add' )
+                                    <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#payroll_modal">
+                                        <i class="fa fa-plus"></i>
+                                        @lang( 'messages.add' )
                                     </button>
                                 </div>
                                 <br><br><br>
@@ -145,15 +139,8 @@
                             <div class="row">
                                 @can('essentials.add_allowance_and_deduction')
                                     <div class="col-md-12">
-                                        <button type="button" class="tw-dw-btn tw-bg-gradient-to-r tw-from-indigo-600 tw-to-blue-500 tw-font-bold tw-text-white tw-border-none tw-rounded-full pull-right btn-modal"
-                                            data-href="{{action([\Modules\Essentials\Http\Controllers\EssentialsAllowanceAndDeductionController::class, 'create'])}}" data-container="#add_allowance_deduction_modal">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                                class="icon icon-tabler icons-tabler-outline icon-tabler-plus">
-                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                <path d="M12 5l0 14" />
-                                                <path d="M5 12l14 0" />
-                                            </svg> @lang( 'messages.add' )
+                                        <button type="button" class="btn btn-primary btn-modal pull-right" data-href="{{action('\Modules\Essentials\Http\Controllers\EssentialsAllowanceAndDeductionController@create')}}" data-container="#add_allowance_deduction_modal">
+                                                <i class="fa fa-plus"></i> @lang( 'messages.add' )
                                         </button>
                                     </div><br><br><br>
                                 @endcan
@@ -206,7 +193,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'index'])}}",
+                    url: "{{action('\Modules\Essentials\Http\Controllers\PayrollController@index')}}",
                     data: function (d) {
                         if ($('#user_id_filter').length) {
                             d.user_id = $('#user_id_filter').val();
@@ -301,7 +288,7 @@
                 ad_pc_table = $('#ad_pc_table').DataTable({
                     processing: true,
                     serverSide: true,
-                    ajax: "{{action([\Modules\Essentials\Http\Controllers\EssentialsAllowanceAndDeductionController::class, 'index'])}}",
+                    ajax: "{{action('\Modules\Essentials\Http\Controllers\EssentialsAllowanceAndDeductionController@index')}}",
                     columns: [
                         { data: 'description', name: 'description' },
                         { data: 'type', name: 'type' },
@@ -350,7 +337,7 @@
                 payroll_group_table = $('#payroll_group_table').DataTable({
                         processing: true,
                         serverSide: true,
-                        ajax: "{{action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'payrollGroupDatatable'])}}",
+                        ajax: "{{action('\Modules\Essentials\Http\Controllers\PayrollController@payrollGroupDatatable')}}",
                         aaSorting: [[6, 'desc']],
                         columns: [
                             { data: 'name', name: 'essentials_payroll_groups.name' },
@@ -400,7 +387,7 @@
                 let location_id = $(this).val();
                 $.ajax({
                     method: 'GET',
-                    url: "{{action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'getEmployeesBasedOnLocation'])}}",
+                    url: "{{action('\Modules\Essentials\Http\Controllers\PayrollController@getEmployeesBasedOnLocation')}}",
                     dataType: 'json',
                     data: {
                         'location_id' : location_id

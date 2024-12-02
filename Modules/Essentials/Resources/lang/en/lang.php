@@ -1,5 +1,4 @@
 <?php
-
 return [
     'essentials' => 'Essentials',
     'document' => 'Document',
@@ -216,7 +215,6 @@ return [
     'leaves' => 'Leaves',
     'my_leaves' => 'My leaves',
     'holidays' => 'Holidays',
-    'birthdays' => 'Birthdays',
     'todays_attendance' => "Today's Attendance",
     'already_clocked_in' => 'Already clocked in',
     'not_clocked_in' => 'Not clocked in',
@@ -310,9 +308,4 @@ return [
     'add_todos' => "Add To Do's",
     'edit_todos' => "Edit To Do's",
     'delete_todos' => "Delete To Do's",
-    'attendance_report' => 'Attendance report',
-    'is_present' => 'Is Present',
-    'days_present' => 'Days Present',
-    'days_absent' => 'Days Absent',
-    'attendace_report_for' => 'Attendance Report for',
 ];

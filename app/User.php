@@ -3,17 +3,16 @@
 namespace App;
 
 use DB;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+
 use Illuminate\Support\Facades\Hash;
-use Laravel\Passport\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasFactory;
     use Notifiable;
     use SoftDeletes;
     use HasRoles;
@@ -25,7 +24,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $guarded = ['id'];
-
+    
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -35,14 +34,12 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
-    // change api guard to web
-    protected $guard_name = 'web';
-
     /**
      * The attributes that should be mutated to dates.
      *
      * @var array
      */
+    
 
     /**
      * Get the business that owns the user.
@@ -72,7 +69,7 @@ class User extends Authenticatable
      */
     public function documentsAndnote()
     {
-        return $this->morphMany(\App\DocumentAndNote::class, 'notable');
+        return $this->morphMany('App\DocumentAndNote', 'notable');
     }
 
     /**
@@ -83,14 +80,14 @@ class User extends Authenticatable
     public static function create_user($details)
     {
         $user = User::create([
-            'surname' => $details['surname'],
-            'first_name' => $details['first_name'],
-            'last_name' => $details['last_name'],
-            'username' => $details['username'],
-            'email' => $details['email'],
-            'password' => Hash::make($details['password']),
-            'language' => ! empty($details['language']) ? $details['language'] : 'en',
-        ]);
+                    'surname' => $details['surname'],
+                    'first_name' => $details['first_name'],
+                    'last_name' => $details['last_name'],
+                    'username' => $details['username'],
+                    'email' => $details['email'],
+                    'password' => Hash::make($details['password']),
+                    'language' => !empty($details['language']) ? $details['language'] : 'en'
+                ]);
 
         return $user;
     }
@@ -99,7 +96,6 @@ class User extends Authenticatable
      * Gives locations permitted for the logged in user
      *
      * @param: int $business_id
-     *
      * @return string or array
      */
     public function permitted_locations($business_id = null)
@@ -109,23 +105,14 @@ class User extends Authenticatable
         if ($user->can('access_all_locations')) {
             return 'all';
         } else {
-            $business_id = ! is_null($business_id) ? $business_id : null;
-            if (empty($business_id) && auth()->check()) {
-                $business_id = auth()->user()->business_id;
-            }
-            if (empty($business_id) && session()->has('business')) {
-                $business_id = session('business.id');
-            }
-
+            $business_id = !is_null($business_id) ? $business_id : request()->session()->get('user.business_id');
             $permitted_locations = [];
             $all_locations = BusinessLocation::where('business_id', $business_id)->get();
-            $permissions = $user->permissions->pluck('name')->all();
             foreach ($all_locations as $location) {
-                if (in_array('location.'.$location->id, $permissions)) {
+                if ($user->can('location.' . $location->id)) {
                     $permitted_locations[] = $location->id;
                 }
             }
-
             return $permitted_locations;
         }
     }
@@ -134,13 +121,12 @@ class User extends Authenticatable
      * Returns if a user can access the input location
      *
      * @param: int $location_id
-     *
-     * @return bool
+     * @return boolean
      */
     public static function can_access_this_location($location_id, $business_id = null)
     {
         $permitted_locations = auth()->user()->permitted_locations($business_id);
-
+        
         if ($permitted_locations == 'all' || in_array($location_id, $permitted_locations)) {
             return true;
         }
@@ -152,16 +138,17 @@ class User extends Authenticatable
     {
         $user = auth()->user();
         $permitted_locations = $user->permitted_locations();
-        $is_admin = $user->hasAnyPermission('Admin#'.$user->business_id);
-        if ($permitted_locations != 'all' && ! $user->can('superadmin') && ! $is_admin) {
+        $is_admin = $user->hasAnyPermission('Admin#' . $user->business_id);
+        if ($permitted_locations != 'all' && !$user->can('superadmin') && !$is_admin) {
             $permissions = ['access_all_locations'];
             foreach ($permitted_locations as $location_id) {
-                $permissions[] = 'location.'.$location_id;
+                $permissions[] = 'location.' . $location_id;
             }
 
-            return $query->whereHas('permissions', function ($q) use ($permissions) {
+            return $query->whereHas('permissions', function($q) use ($permissions) {
                 $q->whereIn('permissions.name', $permissions);
             });
+
         } else {
             return $query;
         }
@@ -173,14 +160,15 @@ class User extends Authenticatable
      * @param $business_id int
      * @param $prepend_none = true (boolean)
      * @param $include_commission_agents = false (boolean)
+     *
      * @return array users
      */
     public static function forDropdown($business_id, $prepend_none = true, $include_commission_agents = false, $prepend_all = false, $check_location_permission = false)
     {
         $query = User::where('business_id', $business_id)
                     ->user();
-
-        if (! $include_commission_agents) {
+                    
+        if (!$include_commission_agents) {
             $query->where('is_cmmsn_agnt', 0);
         }
 
@@ -200,17 +188,18 @@ class User extends Authenticatable
         if ($prepend_all) {
             $users = $users->prepend(__('lang_v1.all'), '');
         }
-
+        
         return $users;
     }
 
     /**
-     * Return list of sales commission agents dropdown for a business
-     *
-     * @param $business_id int
-     * @param $prepend_none = true (boolean)
-     * @return array users
-     */
+    * Return list of sales commission agents dropdown for a business
+    *
+    * @param $business_id int
+    * @param $prepend_none = true (boolean)
+    *
+    * @return array users
+    */
     public static function saleCommissionAgentsDropdown($business_id, $prepend_none = true)
     {
         $all_cmmsn_agnts = User::where('business_id', $business_id)
@@ -233,6 +222,7 @@ class User extends Authenticatable
      * @param $business_id int
      * @param $prepend_none = true (boolean)
      * @param $prepend_all = false (boolean)
+     *
      * @return array users
      */
     public static function allUsersDropdown($business_id, $prepend_none = true, $prepend_all = false)
@@ -268,20 +258,19 @@ class User extends Authenticatable
     /**
      * Return true/false based on selected_contact access
      *
-     * @return bool
+     * @return boolean
      */
     public static function isSelectedContacts($user_id)
     {
         $user = User::findOrFail($user_id);
 
-        return (bool) $user->selected_contacts;
+        return (boolean)$user->selected_contacts;
     }
 
     public function getRoleNameAttribute()
     {
         $role_name_array = $this->getRoleNames();
-        $role_name = ! empty($role_name_array[0]) ? explode('#', $role_name_array[0])[0] : '';
-
+        $role_name = !empty($role_name_array[0]) ? explode('#', $role_name_array[0])[0] : '';
         return $role_name;
     }
 
@@ -316,7 +305,7 @@ class User extends Authenticatable
      */
     public function getImageUrlAttribute()
     {
-        if (isset($this->media->display_url)) {
+        if(isset($this->media->display_url)) {
             $img_src = $this->media->display_url;
         } else {
             $img_src = 'https://ui-avatars.com/api/?name='.$this->first_name;

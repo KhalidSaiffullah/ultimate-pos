@@ -15,7 +15,7 @@ class CreateSuperadminFrontendPagesTable extends Migration
     {
         Schema::create('superadmin_frontend_pages', function (Blueprint $table) {
             $table->increments('id');
-
+            
             $table->string('title')->nullable();
             $table->string('slug');
             $table->longtext('content');

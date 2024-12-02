@@ -1,9 +1,9 @@
 <?php
 
-use App\System;
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+use App\System;
 
 class AddMinTerminationAlertDays extends Migration
 {
@@ -14,7 +14,7 @@ class AddMinTerminationAlertDays extends Migration
      */
     public function up()
     {
-        System::insert(['key' => 'package_expiry_alert_days', 'value' => 5]);
+        System::insert(['key' =>'package_expiry_alert_days', 'value' => 5]);
     }
 
     /**

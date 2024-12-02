@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 class AddOptionsToPackagesTable extends Migration
 {
@@ -16,7 +16,7 @@ class AddOptionsToPackagesTable extends Migration
         Schema::table('packages', function (Blueprint $table) {
             $table->boolean('bookings')->after('product_count')
                 ->default(false)->comment('Enable/Disable bookings');
-
+            
             $table->boolean('kitchen')->after('bookings')
                 ->default(false)->comment('Enable/Disable kitchen');
 

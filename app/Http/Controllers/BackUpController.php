@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Utils\Util;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
-use Log;
 use Storage;
+use Log;
+
+use App\Utils\Util;
 
 class BackUpController extends Controller
 {
     /**
      * All Utils instance.
+     *
      */
     protected $commonUtil;
 
@@ -26,7 +29,7 @@ class BackUpController extends Controller
      */
     public function index()
     {
-        if (! auth()->user()->can('backup')) {
+        if (!auth()->user()->can('backup')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -41,7 +44,7 @@ class BackUpController extends Controller
             if (substr($f, -4) == '.zip' && $disk->exists($f)) {
                 $backups[] = [
                     'file_path' => $f,
-                    'file_name' => str_replace(str_replace('\\', '/', config('backup.backup.name')).'/', '', $f),
+                    'file_name' => str_replace(config('backup.backup.name') . '/', '', $f),
                     'file_size' => $disk->size($f),
                     'last_modified' => $disk->lastModified($f),
                 ];
@@ -51,11 +54,10 @@ class BackUpController extends Controller
         $backups = array_reverse($backups);
 
         $cron_job_command = $this->commonUtil->getCronJobCommand();
-        
-        // $backup_clean_cron_job_command = $this->commonUtil->getBackupCleanCronJobCommand();
+        $backup_clean_cron_job_command = $this->commonUtil->getBackupCleanCronJobCommand();
 
-        return view('backup.index')
-            ->with(compact('backups', 'cron_job_command'));
+        return view("backup.index")
+            ->with(compact('backups', 'cron_job_command', 'backup_clean_cron_job_command'));
     }
 
     /**
@@ -65,14 +67,14 @@ class BackUpController extends Controller
      */
     public function create()
     {
-        if (! auth()->user()->can('backup')) {
+        if (!auth()->user()->can('backup')) {
             abort(403, 'Unauthorized action.');
         }
 
         try {
             //Disable in demo
             $notAllowed = $this->commonUtil->notAllowedInDemo();
-            if (! empty($notAllowed)) {
+            if (!empty($notAllowed)) {
                 return $notAllowed;
             }
 
@@ -81,15 +83,15 @@ class BackUpController extends Controller
             $output = Artisan::output();
 
             // log the results
-            Log::info("Backpack\BackupManager -- new backup started from admin interface \r\n".$output);
-
+            Log::info("Backpack\BackupManager -- new backup started from admin interface \r\n" . $output);
+            
             $output = ['success' => 1,
-                'msg' => __('lang_v1.success'),
-            ];
+                        'msg' => __('lang_v1.success')
+                    ];
         } catch (Exception $e) {
             $output = ['success' => 0,
-                'msg' => $e->getMessage(),
-            ];
+                        'msg' => $e->getMessage()
+                    ];
         }
 
         return back()->with('status', $output);
@@ -102,32 +104,29 @@ class BackUpController extends Controller
      */
     public function download($file_name)
     {
-        if (! auth()->user()->can('backup')) {
+        if (!auth()->user()->can('backup')) {
             abort(403, 'Unauthorized action.');
         }
 
         //Disable in demo
         if (config('app.env') == 'demo') {
             $output = ['success' => 0,
-                'msg' => 'Feature disabled in demo!!',
-            ];
-
+                            'msg' => 'Feature disabled in demo!!'
+                        ];
             return back()->with('status', $output);
         }
 
-        $file = config('backup.backup.name').'/'.$file_name;
+        $file = config('backup.backup.name') . '/' . $file_name;
         $disk = Storage::disk(config('backup.backup.destination.disks')[0]);
         if ($disk->exists($file)) {
             $fs = Storage::disk(config('backup.backup.destination.disks')[0])->getDriver();
             $stream = $fs->readStream($file);
-            //var_dump($fs->size($file));exit;
-
             return \Response::stream(function () use ($stream) {
                 fpassthru($stream);
             }, 200, [
-                'Content-Type' => $fs->mimeType($file),
-                //'Content-Length' => $fs->getSize($file),
-                'Content-disposition' => 'attachment; filename="'.basename($file).'"',
+                "Content-Type" => $fs->getMimetype($file),
+                "Content-Length" => $fs->getSize($file),
+                "Content-disposition" => "attachment; filename=\"" . basename($file) . "\"",
             ]);
         } else {
             abort(404, "The backup file doesn't exist.");
@@ -139,24 +138,21 @@ class BackUpController extends Controller
      */
     public function delete($file_name)
     {
-        
-        if (! auth()->user()->can('backup')) {
+        if (!auth()->user()->can('backup')) {
             abort(403, 'Unauthorized action.');
         }
 
         //Disable in demo
         if (config('app.env') == 'demo') {
             $output = ['success' => 0,
-                'msg' => 'Feature disabled in demo!!',
-            ];
-
+                            'msg' => 'Feature disabled in demo!!'
+                        ];
             return back()->with('status', $output);
         }
 
         $disk = Storage::disk(config('backup.backup.destination.disks')[0]);
-        if ($disk->exists(config('backup.backup.name').'/'.$file_name)) {
-            $disk->delete(config('backup.backup.name').'/'.$file_name);
-
+        if ($disk->exists(config('backup.backup.name') . '/' . $file_name)) {
+            $disk->delete(config('backup.backup.name') . '/' . $file_name);
             return redirect()->back();
         } else {
             abort(404, "The backup file doesn't exist.");

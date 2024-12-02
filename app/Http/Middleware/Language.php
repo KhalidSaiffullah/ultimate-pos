@@ -2,8 +2,10 @@
 
 namespace App\Http\Middleware;
 
-use App;
 use Closure;
+
+use Config;
+use App;
 
 class Language
 {

@@ -5,7 +5,7 @@
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-    <h1 class="tw-text-xl md:tw-text-3xl tw-font-bold tw-text-black">@lang('superadmin::lang.frontend_pages')</h1>
+    <h1>@lang('superadmin::lang.frontend_pages')</h1>
 </section>
 
 <!-- Main content -->
@@ -15,7 +15,7 @@
         <div class="box-header">
             <h3 class="box-title">&nbsp;</h3>
         	<div class="box-tools">
-                <a href="{{action([\Modules\Superadmin\Http\Controllers\PageController::class, 'create'])}}" 
+                <a href="{{action('\Modules\Superadmin\Http\Controllers\PageController@create')}}" 
                     class="btn btn-block btn-primary">
                 	<i class="fa fa-plus"></i> @lang( 'messages.add' )</a>
             </div>
@@ -44,8 +44,8 @@
                                         {{$page->menu_order}}
                                     </span>
 									
-									<a href="{{action([\Modules\Superadmin\Http\Controllers\PageController::class, 'edit'], [$page->id])}}" class="btn btn-box-tool" title="edit"><i class="fa fa-edit"></i></a>
-									<a href="{{action([\Modules\Superadmin\Http\Controllers\PageController::class, 'destroy'], [$page->id])}}" class="btn btn-box-tool delete_page" title="delete"><i class="fa fa-trash"></i></a>
+									<a href="{{action('\Modules\Superadmin\Http\Controllers\PageController@edit', [$page->id])}}" class="btn btn-box-tool" title="edit"><i class="fa fa-edit"></i></a>
+									<a href="{{action('\Modules\Superadmin\Http\Controllers\PageController@destroy', [$page->id])}}" class="btn btn-box-tool delete_page" title="delete"><i class="fa fa-trash"></i></a>
 	              					
 								</div>
 							</div>

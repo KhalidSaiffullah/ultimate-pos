@@ -3,12 +3,15 @@
 namespace App\Console\Commands;
 
 use App\Business;
-use App\PurchaseLine;
 use App\Transaction;
-use App\Utils\BusinessUtil;
+use App\TransactionSellLinesPurchaseLines;
+use App\PurchaseLine;
+
+use Illuminate\Console\Command;
+
 use App\Utils\TransactionUtil;
 use DB;
-use Illuminate\Console\Command;
+use App\Utils\BusinessUtil;
 
 class MapPurchaseSell extends Command
 {
@@ -89,17 +92,17 @@ class MapPurchaseSell extends Command
                                     ->get();
 
                 $pos_settings = empty($business->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business->pos_settings, true);
-                $pos_settings['allow_overselling'] = 1;
+                $pos_settings['allow_overselling'] = 1; 
                 //Iterate through all transaction and add mapping. First go throught sell_lines having lot number.
                 foreach ($transactions as $transaction) {
                     $business_formatted = ['id' => $business->id,
-                        'accounting_method' => $business->accounting_method,
-                        'location_id' => $transaction->location_id,
-                        'pos_settings' => $pos_settings,
-                    ];
+                                'accounting_method' => $business->accounting_method,
+                                'location_id' => $transaction->location_id,
+                                'pos_settings' => $pos_settings
+                            ];
 
                     foreach ($transaction->sell_lines as $line) {
-                        if (! empty($line->lot_no_line_id)) {
+                        if (!empty($line->lot_no_line_id)) {
                             $this->transactionUtil->mapPurchaseSell($business_formatted, [$line], 'purchase', false);
                         }
                     }
@@ -108,10 +111,10 @@ class MapPurchaseSell extends Command
                 //Then through sell_lines not having lot number
                 foreach ($transactions as $transaction) {
                     $business_formatted = ['id' => $business->id,
-                        'accounting_method' => $business->accounting_method,
-                        'location_id' => $transaction->location_id,
-                        'pos_settings' => $pos_settings,
-                    ];
+                                'accounting_method' => $business->accounting_method,
+                                'location_id' => $transaction->location_id,
+                                'pos_settings' => $pos_settings
+                            ];
 
                     foreach ($transaction->sell_lines as $line) {
                         if (empty($line->lot_no_line_id)) {
@@ -124,9 +127,9 @@ class MapPurchaseSell extends Command
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
+            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
 
-            exit($e->getMessage());
+            die($e->getMessage());
         }
     }
 }

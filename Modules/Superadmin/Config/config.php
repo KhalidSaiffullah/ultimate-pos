@@ -2,6 +2,5 @@
 
 return [
     'name' => 'Superadmin',
-    'module_version' => '6.0',
-    'pid' => 20
+    'module_version' => "3.0",
 ];

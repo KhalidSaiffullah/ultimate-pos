@@ -3,20 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\NotificationTemplate;
-use App\Utils\ModuleUtil;
 use Illuminate\Http\Request;
+use App\Utils\ModuleUtil;
 
 class NotificationTemplateController extends Controller
 {
     /**
      * All Utils instance.
+     *
      */
     protected $moduleUtil;
 
     /**
      * Constructor
      *
-     * @param  ProductUtils  $product
+     * @param ProductUtils $product
      * @return void
      */
     public function __construct(ModuleUtil $moduleUtil)
@@ -31,7 +32,7 @@ class NotificationTemplateController extends Controller
      */
     public function index()
     {
-        if (! auth()->user()->can('send_notification')) {
+        if (!auth()->user()->can('send_notification')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -45,7 +46,7 @@ class NotificationTemplateController extends Controller
 
         $module_customer_notifications = $this->moduleUtil->getModuleData('notification_list', ['notification_for' => 'customer']);
 
-        if (! empty($module_customer_notifications)) {
+        if (!empty($module_customer_notifications)) {
             foreach ($module_customer_notifications as $module_customer_notification) {
                 $customer_notifications = array_merge($customer_notifications, $module_customer_notification);
             }
@@ -57,7 +58,7 @@ class NotificationTemplateController extends Controller
 
         $module_supplier_notifications = $this->moduleUtil->getModuleData('notification_list', ['notification_for' => 'supplier']);
 
-        if (! empty($module_supplier_notifications)) {
+        if (!empty($module_supplier_notifications)) {
             foreach ($module_supplier_notifications as $module_supplier_notification) {
                 $supplier_notifications = array_merge($supplier_notifications, $module_supplier_notification);
             }
@@ -84,7 +85,6 @@ class NotificationTemplateController extends Controller
             $notifications[$key]['cc'] = $notification_template['cc'];
             $notifications[$key]['bcc'] = $notification_template['bcc'];
         }
-
         return $notifications;
     }
 
@@ -96,7 +96,7 @@ class NotificationTemplateController extends Controller
      */
     public function store(Request $request)
     {
-        if (! auth()->user()->can('send_notification')) {
+        if (!auth()->user()->can('send_notification')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -107,16 +107,16 @@ class NotificationTemplateController extends Controller
             NotificationTemplate::updateOrCreate(
                 [
                     'business_id' => $business_id,
-                    'template_for' => $key,
+                    'template_for' => $key
                 ],
                 [
                     'subject' => $value['subject'],
                     'email_body' => $value['email_body'],
                     'sms_body' => $value['sms_body'],
                     'whatsapp_text' => $value['whatsapp_text'],
-                    'auto_send' => ! empty($value['auto_send']) ? 1 : 0,
-                    'auto_send_sms' => ! empty($value['auto_send_sms']) ? 1 : 0,
-                    'auto_send_wa_notif' => ! empty($value['auto_send_wa_notif']) ? 1 : 0,
+                    'auto_send' => !empty($value['auto_send']) ? 1 : 0,
+                    'auto_send_sms' => !empty($value['auto_send_sms']) ? 1 : 0,
+                    'auto_send_wa_notif' => !empty($value['auto_send_wa_notif']) ? 1 : 0,
                     'cc' => $value['cc'],
                     'bcc' => $value['bcc'],
                 ]

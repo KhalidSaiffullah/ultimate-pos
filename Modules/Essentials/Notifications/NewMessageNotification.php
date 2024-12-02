@@ -3,8 +3,8 @@
 namespace Modules\Essentials\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 
 class NewMessageNotification extends Notification
 {
@@ -25,7 +25,7 @@ class NewMessageNotification extends Notification
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return array
      */
     public function via($notifiable)
@@ -34,14 +34,14 @@ class NewMessageNotification extends Notification
         if (isPusherEnabled()) {
             $channels[] = 'broadcast';
         }
-
+        
         return $channels;
     }
 
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
@@ -51,7 +51,7 @@ class NewMessageNotification extends Notification
     /**
      * Get the array representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
      * @return array
      */
     public function toArray($notifiable)
@@ -72,8 +72,8 @@ class NewMessageNotification extends Notification
     {
         return new BroadcastMessage([
             'title' => __('essentials::lang.new_message'),
-            'body' => strip_tags(__('essentials::lang.new_message_notification', ['sender' => $this->message->sender->user_full_name])),
-            'link' => action([\Modules\Essentials\Http\Controllers\EssentialsMessageController::class, 'index']),
+            'body' => strip_tags(__('essentials::lang.new_message_notification', ['sender' => $this->message->sender->user_full_name]) ),
+            'link' => action('\Modules\Essentials\Http\Controllers\EssentialsMessageController@index')
         ]);
     }
 }

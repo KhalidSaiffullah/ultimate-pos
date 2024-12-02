@@ -3,7 +3,7 @@
 @section('content')
 @include('essentials::layouts.nav_hrm')
 <section class="content-header">
-    <h1 class="tw-text-xl md:tw-text-3xl tw-font-bold tw-text-black" >
+    <h1>
         @lang('essentials::lang.my_payrolls')
     </h1>
 </section>
@@ -106,7 +106,7 @@
                     processing: true,
                     serverSide: true,
                     ajax: {
-                        url: "{{action([\Modules\Essentials\Http\Controllers\PayrollController::class, 'getMyPayrolls'])}}"
+                        url: "{{action('\Modules\Essentials\Http\Controllers\PayrollController@getMyPayrolls')}}"
                     },
                     columnDefs: [
                         {

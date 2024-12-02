@@ -14,7 +14,7 @@
 						<span class="input-group-addon">
 							<i class="fa fa-user"></i>
 						</span>
-						{!! Form::select('user_id_filter', $users, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('messages.all')]); !!}
+						{!! Form::select('user_id_filter', $users, null, ['class' => 'form-control select2', 'placeholder' => __('messages.all')]); !!}
 					</div>
 				</div>
 			</div>
@@ -22,13 +22,13 @@
 		<div class="col-md-3">
 			<div class="form-group">
 				{!! Form::label('priority_filter', __('essentials::lang.priority') . ':') !!}
-				{!! Form::select('priority_filter', $priorities, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('messages.all')]); !!}
+				{!! Form::select('priority_filter', $priorities, null, ['class' => 'form-control select2', 'placeholder' => __('messages.all')]); !!}
 			</div>
 		</div>
 		<div class="col-md-3">
 			<div class="form-group">
 				{!! Form::label('status_filter', __('sale.status') . ':') !!}
-				{!! Form::select('status_filter', $task_statuses, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('messages.all')]); !!}
+				{!! Form::select('status_filter', $task_statuses, null, ['class' => 'form-control select2', 'placeholder' => __('messages.all')]); !!}
 			</div>
 		</div>
 		<div class="col-md-3">
@@ -42,16 +42,9 @@
 		@slot('tool')
 			@can('essentials.add_todos')
 			<div class="box-tools">
-				<button type="button" class="tw-dw-btn tw-bg-gradient-to-r tw-from-indigo-600 tw-to-blue-500 tw-font-bold tw-text-white tw-border-none tw-rounded-full pull-right btn-modal"
-					data-href="{{action([\Modules\Essentials\Http\Controllers\ToDoController::class, 'create'])}}" 
-					data-container="#task_modal">
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-						stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-						class="icon icon-tabler icons-tabler-outline icon-tabler-plus">
-						<path stroke="none" d="M0 0h24v24H0z" fill="none" />
-						<path d="M12 5l0 14" />
-						<path d="M5 12l14 0" />
-					</svg> @lang( 'messages.add' )
+				<button class="btn btn-block btn-primary btn-modal" data-href="{{action('\Modules\Essentials\Http\Controllers\ToDoController@create')}}" 
+				data-container="#task_modal">
+					<i class="fa fa-plus"></i> @lang( 'messages.add' )</a>
 				</button>
 			</div>
 			@endcan
